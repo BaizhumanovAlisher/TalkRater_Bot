@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# IDE's are local tools, they are not related to the project
+/.idea/
