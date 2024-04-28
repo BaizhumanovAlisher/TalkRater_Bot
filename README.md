@@ -14,3 +14,9 @@ In context of this project, it is proved to use GORM. Reasons:
 4) auto migration
 
 [More information about using ORM in Go](https://youtu.be/MBfjQBDZqt8?si=I80cyqQxswjJCNg1)
+
+## Telegram API Library
+The `telegram-bot-api` library was selected because:
+1) ready-made library
+2) the largest number of stars in [GitHub](https://github.com/go-telegram-bot-api/telegram-bot-api)
+3) documentation in [go.dev](https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5)
