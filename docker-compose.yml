@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  talk_rater_db:
+    container_name: "talk_rater_postgresql"
+    image: postgres:16.2-alpine3.19
+    restart: always
+    ports:
+      - "9000:5432"
+    environment:
+      POSTGRES_USER: telegram_bot
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+
+      POSTGRES_DB: talk_rater_db
+    networks:
+      - backend
+    volumes:
+      - talk_rater_data:/var/lib/postgresql/data
+    secrets:
+      - db_password
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  talk_rater_data:

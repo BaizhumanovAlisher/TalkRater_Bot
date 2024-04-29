@@ -3,6 +3,12 @@ The [competitive task](https://www.notion.so/Telegram-835fdb2333be43efae71edd413
 of the [GolangConf 2024](https://cfp.golangconf.ru/) 
 conference is a Telegram bot that simplifies the process of evaluating reports.
 
+## Install and run project
+1) install [docker engine](https://docs.docker.com/engine/install/), [docker compose](https://docs.docker.com/compose/install/), [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+2) `git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git`
+3) `cd TalkRater_Bot`
+4) `docker-compose up`
+
 ## About using GORM
 This project contain GORM library, but there exist some critics in gopher community.
 
