@@ -9,6 +9,7 @@ type Lecture struct {
 	Id      int64
 	Name    string
 	Speaker string
+	URL     string //check contains unique
 	Start   time.Time
 	End     time.Time
 }
@@ -24,4 +25,7 @@ func ValidateLecture(v *validator.Validator, lect *Lecture) {
 	v.Check(!lect.End.IsZero(), "end", "End time is required")
 
 	v.Check(lect.Start.Before(lect.End), "start and end time", "Start time must be before End time")
+
+	diff := lect.End.Sub(lect.Start)
+	v.Check(diff <= time.Hour*12, "duration", "Duration must be lower than 12 hours")
 }
