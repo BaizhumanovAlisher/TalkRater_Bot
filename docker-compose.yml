@@ -18,6 +18,14 @@ services:
       - talk_rater_data:/var/lib/postgresql/data
     secrets:
       - db_password
+  talk_rater_bot:
+    container_name: "talk_rater_server"
+    build:
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - backend
+#      - out_world
 
 secrets:
   db_password:
@@ -30,6 +38,8 @@ secrets:
 networks:
   backend:
     driver: bridge
+#  out_world:
+#    driver: host
 
 volumes:
   talk_rater_data:

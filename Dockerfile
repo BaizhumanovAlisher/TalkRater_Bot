@@ -1,0 +1,23 @@
+FROM golang:1.21.9 AS build-stage
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -C ./cmd/api/ -o /talk_rater_bot
+
+# Run the tests in the container
+FROM build-stage AS run-test-stage
+RUN go test -v ./...
+
+# Deploy the application binary into a lean image
+FROM alpine AS build-release-stage
+
+WORKDIR /
+
+COPY --from=build-stage /talk_rater_bot /talk_rater_bot
+
+CMD ["./talk_rater_bot"]
