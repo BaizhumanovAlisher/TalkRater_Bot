@@ -5,10 +5,15 @@ conference is a Telegram bot that simplifies the process of evaluating reports.
 
 ## Install project
 1) install [docker engine](https://docs.docker.com/engine/install/), [docker compose](https://docs.docker.com/compose/install/), [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-2) `git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git`
-3) `cd TalkRater_Bot`
-4) `echo "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt`
-5) `echo "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt`
+2)
+```shell
+git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git
+cd TalkRater_Bot
+mkdir secrets
+echo -n "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt
+echo -n "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt
+echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
+```
 
 ## Run project
 1) `docker-compose up`
