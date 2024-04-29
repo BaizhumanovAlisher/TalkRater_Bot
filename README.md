@@ -34,3 +34,4 @@ In context of this project, it is proved to use GORM. Reasons:
 The `Telebot` library was selected because:
 1) many star in [GitHub](https://github.com/tucnak/telebot)
 2) documentation in [go.dev](https://pkg.go.dev/gopkg.in/telebot.v3)
+3) MIT License
