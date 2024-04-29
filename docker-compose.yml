@@ -22,6 +22,10 @@ services:
 secrets:
   db_password:
     file: ./secrets/db_password.txt
+  tg_api_token_admin:
+    file: ./secrets/tg_api_token_admin.txt
+  tg_api_token_user:
+    file: ./secrets/tg_api_token_user.txt
 
 networks:
   backend:
