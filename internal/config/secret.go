@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"log"
 	"os"
 )
@@ -36,5 +37,5 @@ func LoadOneSecret(env string) []byte {
 		log.Fatal(err)
 	}
 
-	return data
+	return bytes.TrimSpace(data)
 }
