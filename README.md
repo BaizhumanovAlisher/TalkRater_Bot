@@ -5,7 +5,7 @@ conference is a Telegram bot that simplifies the process of evaluating reports.
 
 ## Install project
 1) install [docker engine](https://docs.docker.com/engine/install/), [docker compose](https://docs.docker.com/compose/install/), [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-2)
+2) Run bash script
 ```shell
 git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git
 cd TalkRater_Bot
