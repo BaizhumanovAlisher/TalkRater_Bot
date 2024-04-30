@@ -9,14 +9,26 @@ conference is a Telegram bot that simplifies the process of evaluating reports.
 ```shell
 git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git
 cd TalkRater_Bot
+
 mkdir secrets
 echo -n "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt
 echo -n "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt
 echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
+
+export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
+export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
+export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 ```
 
 ## Run project
-1) `docker-compose up`
+```shell
+docker-compose up
+```
+
+## Run only talk_rater_bot container
+```shell
+docker-compose up talk_rater_bot
+```
 
 ## About using GORM
 This project contain GORM library, but there exist some critics in gopher community.
