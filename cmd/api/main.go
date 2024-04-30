@@ -1,19 +1,17 @@
 package main
 
 import (
-	"TalkRater_Bot/internal/config"
-	"log"
-	"time"
-
+	configpackage "TalkRater_Bot/internal/config"
 	tele "gopkg.in/telebot.v3"
+	"log"
 )
 
 func main() {
-	secrets := config.MustLoadSecret()
+	config := configpackage.MustLoadConfig()
 
 	pref := tele.Settings{
-		Token:  string(secrets.TelegramTokenUser),
-		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
+		Token:  config.TgBotSettings.TokenUser,
+		Poller: &tele.LongPoller{Timeout: config.TgBotSettings.Timeout},
 	}
 
 	b, err := tele.NewBot(pref)

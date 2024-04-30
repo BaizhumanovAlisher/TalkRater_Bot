@@ -47,3 +47,11 @@ The `Telebot` library was selected because:
 1) many star in [GitHub](https://github.com/tucnak/telebot)
 2) documentation in [go.dev](https://pkg.go.dev/gopkg.in/telebot.v3)
 3) MIT License
+
+## Default time pattern from csv schedule
+`21/07/2024 10:00:00` - MSK time Zone
+
+## TODO List
+- add monitoring with Prometheus
+- add backup before removing all data from DB
+- add check sql injection

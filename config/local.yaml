@@ -1,0 +1,24 @@
+env: "local" # local, prod
+
+# example data of correct conference
+conference:
+  name: "YADRO GO MEETUP"
+  url: "https://www.youtube.com/live/PruUHpEDN4s?si=OStiaHDKOFORr7M8"
+  start_time: "28/03/2024 19:00:00" # time pattern from README.md
+  end_time: "28/03/2024 22:05:16"
+  end_evaluation_time: "28/03/2024 22:35:16"
+
+# clear all DB if previous conference. Preferred to set true because only one conference can be saved
+clear_db_for_new_conference: true
+
+database:
+  host: "localhost"
+  port: 9000
+  user: "telegram_bot"
+  database_name: "talk_rater_db"
+
+tg_bot_settings:
+  admins:
+    - cs_and_dev # this is tg username of creator this bot
+    #- you can add here a list of admins
+  timeout: 10s # in tech requirements it is 2s
