@@ -18,6 +18,7 @@ echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
 export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
+export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
 ```
 
 ## Run project
@@ -30,7 +31,9 @@ docker-compose up
 docker-compose up talk_rater_bot
 ```
 
-## About using GORM
+## External libraries
+
+### About using GORM
 This project contain GORM library, but there exist some critics in gopher community.
 
 In context of this project, it is proved to use GORM. Reasons:
@@ -39,14 +42,19 @@ In context of this project, it is proved to use GORM. Reasons:
 2) basic CRUD operations
 3) speed up development
 4) auto migration
+5) MIT licensed
 
 [More information about using ORM in Go](https://youtu.be/MBfjQBDZqt8?si=I80cyqQxswjJCNg1)
 
-## Telegram API Library
+### Telegram API Library
 The `Telebot` library was selected because:
 1) many star in [GitHub](https://github.com/tucnak/telebot)
 2) documentation in [go.dev](https://pkg.go.dev/gopkg.in/telebot.v3)
-3) MIT License
+3) MIT licensed
+
+### Cleanenv
+Simple loading config file
+1) MIT licensed
 
 ## Default time pattern from csv schedule
 `21/07/2024 10:00:00` - MSK time Zone

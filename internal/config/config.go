@@ -4,6 +4,7 @@ import (
 	"TalkRater_Bot/internal/data"
 	"bytes"
 	"fmt"
+	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
 	"time"
@@ -12,18 +13,34 @@ import (
 type Config struct {
 	Env string `yaml:"env" env-required:"true"`
 
-	ClearDbForNewConference bool              `yaml:"clear_db" env-default:"true"`
-	ConferenceConfig        *ConferenceConfig `yaml:"conference" env-required:"true"`
-	SecretPath              *SecretPath       `yaml:"-"`
-	DatabaseConfig          *DatabaseConfig   `yaml:"database" env-required:"true"`
+	ClearDbForNewConference bool             `yaml:"clear_db" env-default:"true"`
+	ConferenceConfig        ConferenceConfig `yaml:"conference" env-required:"true"`
+	SecretPath              SecretPath       `yaml:"secret"` // no parsing in config file is required
+	DatabaseConfig          DatabaseConfig   `yaml:"database" env-required:"true"`
 
-	TgBotSettings *TgBotSettings   `yaml:"tg_bot_settings"`
+	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
 }
 
 func MustLoadConfig() *Config {
+	configPath := os.Getenv("CONFIG_PATH_TG_BOT")
 
-	return nil
+	var cfg Config
+
+	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+		log.Fatalf("can not read config: %s", err)
+	}
+
+	dbPassword := LoadOneSecret(cfg.SecretPath.DatabasePasswordPathFile)
+	cfg.DatabaseConfig.compile(dbPassword)
+
+	tokenUser := LoadOneSecret(cfg.SecretPath.TgTokenUserPathFile)
+	tokenAdminPanel := LoadOneSecret(cfg.SecretPath.TgTokenAdminPanelPathFile)
+
+	cfg.TgBotSettings.TokenUser = tokenUser
+	cfg.TgBotSettings.TokenAdminPanel = tokenAdminPanel
+
+	return &cfg
 }
 
 type ConferenceConfig struct {
@@ -35,15 +52,15 @@ type ConferenceConfig struct {
 }
 
 type SecretPath struct {
-	DatabasePasswordPathFile        string `env:"DB_PASSWORD_FILE" env-required:"true"`
-	TelegramTokenUserPathFile       string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
-	TelegramTokenAdminPanelPathFile string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
+	DatabasePasswordPathFile  string `env:"DB_PASSWORD_FILE" env-required:"true"`
+	TgTokenUserPathFile       string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
+	TgTokenAdminPanelPathFile string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
 }
 
 func LoadOneSecret(pathToFile string) string {
-	fileBytes, err := os.ReadFile(os.Getenv(pathToFile))
+	fileBytes, err := os.ReadFile(pathToFile)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("can not read secret: %s", err)
 	}
 
 	return string(bytes.TrimSpace(fileBytes))
