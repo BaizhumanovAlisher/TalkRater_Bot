@@ -19,13 +19,22 @@ services:
     secrets:
       - db_password
   talk_rater_bot:
-    container_name: "talk_rater_server"
+    depends_on:
+      - talk_rater_db
     build:
+      context: .
       dockerfile: Dockerfile
-    restart: unless-stopped
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user
+      TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin
+    # restart: unless-stopped
     networks:
       - backend
-#      - out_world
+    secrets:
+      - db_password
+      - tg_api_token_admin
+      - tg_api_token_user
 
 secrets:
   db_password:
@@ -38,8 +47,6 @@ secrets:
 networks:
   backend:
     driver: bridge
-#  out_world:
-#    driver: host
 
 volumes:
   talk_rater_data:

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"TalkRater_Bot/internal/config"
 	"log"
 	"time"
 
@@ -8,8 +9,10 @@ import (
 )
 
 func main() {
+	secrets := config.MustLoadSecret()
+
 	pref := tele.Settings{
-		Token:  "API_TOKEN",
+		Token:  string(secrets.TelegramTokenUser),
 		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
 	}
 
