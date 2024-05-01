@@ -10,7 +10,7 @@ conference is a Telegram bot that simplifies the process of evaluating reports.
 git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git
 cd TalkRater_Bot
 
-mkdir secrets
+mkdir -p secrets export_files
 echo -n "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt
 echo -n "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt
 echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
@@ -19,7 +19,14 @@ export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
+export PATH_LOGS="$(pwd)/export_files/logs.json"
 ```
+
+## Env variable for logger
+It is in `config/local.yaml`, var is `env`.
+It can be `local` and `prod`
+
+Settings of logger are in `internal/helpers/logger.go`.
 
 ## Run project
 ```shell
@@ -60,6 +67,5 @@ Simple loading config file
 `21/07/2024 10:00:00` - MSK time Zone
 
 ## TODO List
-- add monitoring with Prometheus
 - add backup before removing all data from DB
 - add check sql injection

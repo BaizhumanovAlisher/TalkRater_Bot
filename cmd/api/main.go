@@ -1,13 +1,18 @@
 package main
 
 import (
-	configpackage "TalkRater_Bot/internal/config"
+	"TalkRater_Bot/internal/helpers"
 	tele "gopkg.in/telebot.v3"
 	"log"
+	"log/slog"
 )
 
 func main() {
-	config := configpackage.MustLoadConfig()
+	config := helpers.MustLoadConfig()
+
+	logger := helpers.SetupLogger(config.Env)
+	slog.SetDefault(logger)
+	logger.Info("Start bot...")
 
 	pref := tele.Settings{
 		Token:  config.TgBotSettings.TokenUser,

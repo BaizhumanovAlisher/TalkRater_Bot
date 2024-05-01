@@ -15,7 +15,7 @@ FROM build-stage AS run-test-stage
 RUN go test -v ./...
 
 # Deploy the application binary into a lean image
-FROM alphine AS build-release-stage
+FROM alpine AS build-release-stage
 
 WORKDIR /
 

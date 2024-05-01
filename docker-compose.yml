@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   talk_rater_db:
-    container_name: "talk_rater_postgresql"
+    container_name: "postgresql-alpine"
     image: postgres:16.2-alpine3.19
     restart: always
     ports:
@@ -29,20 +29,19 @@ services:
       DB_PASSWORD_FILE: /run/secrets/db_password
       TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user
       TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin
-      CONFIG_PATH_TG_BOT: /run/configs/config
-    restart: unless-stopped
+      CONFIG_PATH_TG_BOT: /run/secrets/config.yaml
+
+      PATH_LOGS: /tmp/logs.json
+    # restart: unless-stopped
     networks:
       - backend
-    configs:
-      - config
     secrets:
       - db_password
       - tg_api_token_admin
       - tg_api_token_user
-
-configs:
-  config:
-    file: ./config/local.yaml
+      - config.yaml
+    volumes:
+      - export_data:/tmp
 
 secrets:
   db_password:
@@ -51,6 +50,8 @@ secrets:
     file: ./secrets/tg_api_token_admin.txt
   tg_api_token_user:
     file: ./secrets/tg_api_token_user.txt
+  config.yaml:
+    file: ./config/local.yaml
 
 networks:
   backend:
@@ -58,4 +59,6 @@ networks:
 
 volumes:
   talk_rater_data:
+    driver: local
+  export_data:
     driver: local
