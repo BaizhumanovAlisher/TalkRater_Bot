@@ -43,6 +43,7 @@ func MustLoadConfig() *Config {
 	cfg.TgBotSettings.TokenAdminPanel = tokenAdminPanel
 
 	cfg.MustLoadConference()
+	cfg.TgBotSettings.validateAdmins()
 
 	return &cfg
 }
@@ -98,6 +99,21 @@ type TgBotSettings struct {
 	TokenAdminPanel string        `yaml:"-"`
 }
 
+func (tbs *TgBotSettings) validateAdmins() {
+	v := validator.New()
+
+	v.Check(len(tbs.Admins) > 0, "admins count", "Count of admins must be greater than 0")
+	v.Check(validator.Unique(tbs.Admins), "admins unique", "admins must be unique")
+
+	for _, admin := range tbs.Admins {
+		v.Check(admin != "", "admins not empty", "admins must not be empty")
+	}
+
+	if !v.Valid() {
+		log.Fatalf("non valid admins: %v", tbs.Admins)
+	}
+}
+
 func (cfg *Config) convertConference(confStr *ConferenceConfig) (*data.Conference, error) {
 	startTime, err := data.ParseTimeString(confStr.StartTime, cfg.Location, data.FileLayout)
 	if err != nil {
@@ -138,7 +154,7 @@ func (cfg *Config) MustLoadConference() {
 	v := validator.New()
 	data.ValidateConference(v, conference)
 	if !v.Valid() {
-		log.Fatalf("can not validate conference: %s", v.Errors)
+		log.Fatalf("can not validate conference: %v", v.Errors)
 	}
 	cfg.Conference = conference
 }
