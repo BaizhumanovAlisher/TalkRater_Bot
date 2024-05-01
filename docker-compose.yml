@@ -28,13 +28,20 @@ services:
       DB_PASSWORD_FILE: /run/secrets/db_password
       TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user
       TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin
+      CONFIG_PATH_TG_BOT: /run/configs/config
     # restart: unless-stopped
     networks:
       - backend
+    configs:
+      - config
     secrets:
       - db_password
       - tg_api_token_admin
       - tg_api_token_user
+
+configs:
+  config:
+    file: ./config/local.yaml
 
 secrets:
   db_password:
