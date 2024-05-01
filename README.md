@@ -33,11 +33,6 @@ Settings of logger are in `internal/helpers/logger.go`.
 docker-compose up
 ```
 
-## Run only talk_rater_bot container
-```shell
-docker-compose up talk_rater_bot
-```
-
 ## External libraries
 
 ### About using GORM
