@@ -22,7 +22,6 @@ services:
   talk_rater_bot:
     depends_on:
       - talk_rater_db
-      - prometheus
     build:
       context: .
       dockerfile: Dockerfile
@@ -41,32 +40,6 @@ services:
       - tg_api_token_admin
       - tg_api_token_user
 
-  prometheus:
-    image: docker.io/prom/prometheus:v2.51.2
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    command: "--config.file=/etc/prometheus/prometheus.yaml"
-    volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
-      - prometheus-data:/prometheus
-    restart: unless-stopped
-    networks:
-      - backend
-
-  grafana:
-    depends_on:
-      - prometheus
-    image: docker.io/grafana/grafana-oss:10.4.2
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-    restart: unless-stopped
-    networks:
-      - backend
-
 configs:
   config:
     file: ./config/local.yaml
@@ -82,13 +55,7 @@ secrets:
 networks:
   backend:
     driver: bridge
-  output_world:
-    driver: host
 
 volumes:
   talk_rater_data:
-    driver: local
-  grafana-data:
-    driver: local
-  prometheus-data:
     driver: local
