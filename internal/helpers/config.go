@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"TalkRater_Bot/internal/data"
+	"TalkRater_Bot/internal/validator"
 	"bytes"
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -15,11 +16,12 @@ type Config struct {
 
 	ClearDbForNewConference bool             `yaml:"clear_db" env-default:"true"`
 	ConferenceConfig        ConferenceConfig `yaml:"conference" env-required:"true"`
-	SecretPath              SecretPath       `yaml:"secret"` // no parsing in config file is required
+	SecretPath              SecretPath       `yaml:"secret"` // no parsing in config file is required. only for env
 	DatabaseConfig          DatabaseConfig   `yaml:"database" env-required:"true"`
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
+	Location      *time.Location   `yaml:"-"`
 }
 
 func MustLoadConfig() *Config {
@@ -39,6 +41,8 @@ func MustLoadConfig() *Config {
 
 	cfg.TgBotSettings.TokenUser = tokenUser
 	cfg.TgBotSettings.TokenAdminPanel = tokenAdminPanel
+
+	cfg.MustLoadConference()
 
 	return &cfg
 }
@@ -92,4 +96,49 @@ type TgBotSettings struct {
 	Timeout         time.Duration `yaml:"timeout" env-required:"true"`
 	TokenUser       string        `yaml:"-"`
 	TokenAdminPanel string        `yaml:"-"`
+}
+
+func (cfg *Config) convertConference(confStr *ConferenceConfig) (*data.Conference, error) {
+	startTime, err := data.ParseTimeString(confStr.StartTime, cfg.Location, data.FileLayout)
+	if err != nil {
+		return nil, err
+	}
+
+	endTime, err := data.ParseTimeString(confStr.EndTime, cfg.Location, data.FileLayout)
+	if err != nil {
+		return nil, err
+	}
+
+	endEvaluationTime, err := data.ParseTimeString(confStr.EndEvaluationTime, cfg.Location, data.FileLayout)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.Conference{
+		Name:              confStr.Name,
+		URL:               confStr.URL,
+		StartTime:         startTime,
+		EndTime:           endTime,
+		EndEvaluationTime: endEvaluationTime,
+	}, nil
+}
+
+func (cfg *Config) MustLoadConference() {
+	location, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		log.Fatalf("can not load location: %s", err)
+	}
+	cfg.Location = location
+
+	conference, err := cfg.convertConference(&cfg.ConferenceConfig)
+	if err != nil {
+		log.Fatalf("can not convert conference: %s", err)
+	}
+
+	v := validator.New()
+	data.ValidateConference(v, conference)
+	if !v.Valid() {
+		log.Fatalf("can not validate conference: %s", v.Errors)
+	}
+	cfg.Conference = conference
 }

@@ -8,15 +8,23 @@ import (
 )
 
 func main() {
-	config := helpers.MustLoadConfig()
+	cfg := helpers.MustLoadConfig()
 
-	logger := helpers.SetupLogger(config.Env)
+	logger := helpers.SetupLogger(cfg.Env)
 	slog.SetDefault(logger)
-	logger.Info("Start bot...")
+	logger.Info("Start application...")
+
+	logger.Info("current conference",
+		slog.String("name", cfg.Conference.Name),
+		slog.String("url", cfg.Conference.URL),
+		slog.Time("start", cfg.Conference.StartTime),
+		slog.Time("end", cfg.Conference.EndTime),
+		slog.Time("end evaluation", cfg.Conference.EndEvaluationTime),
+	)
 
 	pref := tele.Settings{
-		Token:  config.TgBotSettings.TokenUser,
-		Poller: &tele.LongPoller{Timeout: config.TgBotSettings.Timeout},
+		Token:  cfg.TgBotSettings.TokenUser,
+		Poller: &tele.LongPoller{Timeout: cfg.TgBotSettings.Timeout},
 	}
 
 	b, err := tele.NewBot(pref)
