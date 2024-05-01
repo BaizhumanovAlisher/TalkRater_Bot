@@ -1,8 +1,8 @@
 package data
 
 import (
-	"TalkRater_Bot/internal/validator"
 	"errors"
+	"talk_rater_bot/internal/validator"
 )
 
 type Evaluation struct {

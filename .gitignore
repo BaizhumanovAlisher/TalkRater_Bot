@@ -24,4 +24,4 @@ go.work
 /.idea/
 
 /secrets
-/export_files
+/tmp_files

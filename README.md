@@ -10,7 +10,7 @@ conference is a Telegram bot that simplifies the process of evaluating reports.
 git clone https://github.com/BaizhumanovAlisher/TalkRater_Bot.git
 cd TalkRater_Bot
 
-mkdir -p secrets export_files
+mkdir -p secrets tmp_files
 echo -n "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt
 echo -n "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt
 echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
@@ -19,7 +19,7 @@ export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
-export PATH_LOGS="$(pwd)/export_files/logs.json"
+export PATH_LOGS="$(pwd)/tmp_files/logs.json"
 ```
 
 ## Env variable for logger

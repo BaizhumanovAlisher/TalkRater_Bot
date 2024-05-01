@@ -1,10 +1,10 @@
 package main
 
 import (
-	"TalkRater_Bot/internal/helpers"
 	tele "gopkg.in/telebot.v3"
 	"log"
 	"log/slog"
+	"talk_rater_bot/internal/helpers"
 )
 
 func main() {
@@ -38,4 +38,12 @@ func main() {
 	})
 
 	b.Start()
+
+	user := &tele.User{ID: 12345678} // Replace with the actual user ID
+
+	// Define the notification message
+	notification := "This is your notification message."
+
+	// Send the notification
+	_, err = b.Send(user, notification)
 }

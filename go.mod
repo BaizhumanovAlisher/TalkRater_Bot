@@ -1,4 +1,4 @@
-module TalkRater_Bot
+module talk_rater_bot
 
 go 1.21
 

@@ -1,7 +1,7 @@
 package data
 
 import (
-	"TalkRater_Bot/internal/validator"
+	"talk_rater_bot/internal/validator"
 	"time"
 )
 
@@ -39,5 +39,5 @@ func ParseTimeString(timeString string, location *time.Location, layout string) 
 }
 
 func ConvertTime(t time.Time, location *time.Location, layout string) string {
-	return t.In(location).Format(FileLayout)
+	return t.In(location).Format(layout)
 }

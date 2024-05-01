@@ -1,13 +1,13 @@
 package helpers
 
 import (
-	"TalkRater_Bot/internal/data"
-	"TalkRater_Bot/internal/validator"
 	"bytes"
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
+	"talk_rater_bot/internal/data"
+	"talk_rater_bot/internal/validator"
 	"time"
 )
 

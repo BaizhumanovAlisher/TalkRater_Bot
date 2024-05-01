@@ -1,7 +1,7 @@
 package data
 
 import (
-	"TalkRater_Bot/internal/validator"
+	"talk_rater_bot/internal/validator"
 	"time"
 )
 
