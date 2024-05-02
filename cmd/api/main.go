@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"time"
 )
@@ -27,11 +28,13 @@ func main() {
 
 	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
 	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
+	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
 
 	app := application{
 		logger:   logger,
 		userBot:  userBot,
 		adminBot: adminBot,
+		adminDB:  adminDB,
 	}
 
 	app.routes()
@@ -49,6 +52,7 @@ type application struct {
 	logger   *slog.Logger
 	userBot  *tele.Bot
 	adminBot *tele.Bot
+	adminDB  *databases.AdminDB
 }
 
 func (app *application) run() {
