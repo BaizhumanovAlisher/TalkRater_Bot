@@ -4,6 +4,9 @@ import (
 	tele "gopkg.in/telebot.v3"
 	"log"
 	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
 	"talk_rater_bot/internal/helpers"
 	"time"
 )
@@ -35,8 +38,11 @@ func main() {
 	app.run()
 	logger.Info("Start application...")
 
-	stop := make(chan bool)
-	<-stop
+	_ = waitSignal()
+
+	logger.Info("Stop application...")
+	app.userBot.Stop()
+	app.adminBot.Stop()
 }
 
 type application struct {
@@ -61,4 +67,11 @@ func setupBot(token string, timeout time.Duration) *tele.Bot {
 		log.Fatal(err)
 	}
 	return b
+}
+
+func waitSignal() os.Signal {
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	return <-stop
 }
