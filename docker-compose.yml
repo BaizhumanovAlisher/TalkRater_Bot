@@ -9,15 +9,14 @@ services:
       - "9000:5432"
     environment:
       POSTGRES_USER: telegram_bot
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password.txt
 
       POSTGRES_DB: talk_rater_db
     networks:
       - backend
     volumes:
       - talk_rater_data:/var/lib/postgresql/data
-    secrets:
-      - db_password
+      - ./secrets/db_password.txt:/run/secrets/db_password.txt
 
   talk_rater_bot:
     depends_on:
@@ -26,32 +25,20 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DB_PASSWORD_FILE: /run/secrets/db_password
-      TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user
-      TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin
-      CONFIG_PATH_TG_BOT: /run/secrets/config.yaml
+      DB_PASSWORD_FILE: /run/secrets/db_password.txt
+      TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user.txt
+      TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin.txt
+      CONFIG_PATH_TG_BOT: /run/configs/local.yaml
 
       PATH_LOGS: /tmp/logs.json
     # restart: unless-stopped
     networks:
       - backend
-    secrets:
-      - db_password
-      - tg_api_token_admin
-      - tg_api_token_user
-      - config.yaml
     volumes:
-      - export_data:/tmp
-
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-  tg_api_token_admin:
-    file: ./secrets/tg_api_token_admin.txt
-  tg_api_token_user:
-    file: ./secrets/tg_api_token_user.txt
-  config.yaml:
-    file: ./config/local.yaml
+      - ./tmp_files:/tmp
+      - ./template_response:/template_response
+      - ./secrets:/run/secrets
+      - ./config:/run/configs
 
 networks:
   backend:
@@ -59,6 +46,4 @@ networks:
 
 volumes:
   talk_rater_data:
-    driver: local
-  export_data:
     driver: local

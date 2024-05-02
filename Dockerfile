@@ -17,6 +17,8 @@ RUN go test -v ./...
 # Deploy the application binary into a lean image
 FROM alpine AS build-release-stage
 
+RUN apk add --no-cache tzdata
+
 WORKDIR /
 
 COPY --from=build-stage /talk_rater_bot /talk_rater_bot
