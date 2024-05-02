@@ -31,12 +31,13 @@ services:
       CONFIG_PATH_TG_BOT: /run/configs/local.yaml
 
       PATH_LOGS: /tmp/logs.json
+      TEMPLATE_PATH: /templates
     # restart: unless-stopped
     networks:
       - backend
     volumes:
       - ./tmp_files:/tmp
-      - ./template_response:/template_response
+      - ./templates:/templates
       - ./secrets:/run/secrets
       - ./config:/run/configs
 
