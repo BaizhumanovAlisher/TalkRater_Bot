@@ -20,6 +20,7 @@ export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
 export PATH_LOGS="$(pwd)/tmp_files/logs.json"
+export TEMPLATE_PATH="$(pwd)/templates"
 ```
 
 If you try to run project in Windows OS without containers, you can get some problems, because application is using Unix filesystem.

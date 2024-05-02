@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
+	"talk_rater_bot/internal/templates"
 	"time"
 )
 
@@ -18,6 +19,27 @@ func main() {
 	logger := helpers.SetupLogger(cfg.Env)
 	slog.SetDefault(logger)
 
+	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
+	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
+	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
+	render, err := templates.NewRender(os.Getenv("TEMPLATE_PATH"))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app := application{
+		logger:   logger,
+		userBot:  userBot,
+		adminBot: adminBot,
+		adminDB:  adminDB,
+		render:   render,
+	}
+
+	app.routes()
+	app.run()
+
+	logger.Info("Start application...")
 	logger.Info("conference",
 		slog.String("name", cfg.Conference.Name),
 		slog.String("url", cfg.Conference.URL),
@@ -25,21 +47,6 @@ func main() {
 		slog.Time("end", cfg.Conference.EndTime),
 		slog.Time("end evaluation", cfg.Conference.EndEvaluationTime),
 	)
-
-	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
-	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
-	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
-
-	app := application{
-		logger:   logger,
-		userBot:  userBot,
-		adminBot: adminBot,
-		adminDB:  adminDB,
-	}
-
-	app.routes()
-	app.run()
-	logger.Info("Start application...")
 
 	_ = waitSignal()
 
@@ -53,6 +60,7 @@ type application struct {
 	userBot  *tele.Bot
 	adminBot *tele.Bot
 	adminDB  *databases.AdminDB
+	render   *templates.Render
 }
 
 func (app *application) run() {
