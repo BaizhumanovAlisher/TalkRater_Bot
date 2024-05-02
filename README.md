@@ -22,6 +22,8 @@ export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
 export PATH_LOGS="$(pwd)/tmp_files/logs.json"
 ```
 
+If you try to run project in Windows OS without containers, you can get some problems, because application is using Unix filesystem.
+
 ## Env variable for logger
 It is in `config/local.yaml`, var is `env`.
 It can be `local` and `prod`
