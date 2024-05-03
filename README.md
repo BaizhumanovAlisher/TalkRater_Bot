@@ -62,6 +62,8 @@ The `Telebot` library was selected because:
 ### Cleanenv
 Simple loading config file
 1) MIT licensed
+2) https://github.com/ilyakaznacheev/cleanenv
+
 
 ## Default time pattern from csv schedule
 `21/07/2024 10:00:00` - MSK time Zone
