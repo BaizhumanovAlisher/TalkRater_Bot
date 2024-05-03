@@ -4,15 +4,11 @@ import (
 	tele "gopkg.in/telebot.v3"
 	"log"
 	"log/slog"
-	"os"
-	"os/signal"
-	"syscall"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"talk_rater_bot/internal/templates"
 	"talk_rater_bot/internal/templates/admin"
 	"talk_rater_bot/internal/templates/user"
-	"time"
 )
 
 func main() {
@@ -55,7 +51,7 @@ func main() {
 		slog.Time("end evaluation", cfg.Conference.EndEvaluationTime),
 	)
 
-	_ = waitSignal()
+	_ = helpers.WaitSignal()
 
 	logger.Info("Stop application...")
 	app.userBot.Stop()
@@ -74,24 +70,4 @@ type application struct {
 func (app *application) run() {
 	go app.userBot.Start()
 	go app.adminBot.Start()
-}
-
-func setupBot(token string, timeout time.Duration) *tele.Bot {
-	pref := tele.Settings{
-		Token:  token,
-		Poller: &tele.LongPoller{Timeout: timeout},
-	}
-
-	b, err := tele.NewBot(pref)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return b
-}
-
-func waitSignal() os.Signal {
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
-
-	return <-stop
 }

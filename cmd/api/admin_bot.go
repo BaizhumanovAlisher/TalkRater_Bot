@@ -6,12 +6,22 @@ import (
 	"talk_rater_bot/internal/templates/admin"
 )
 
-const opHelloWorldHandler = "admin_bot.helloWorldAdmin"
+const opStartAndHelpAdmin = "admin_bot.startAndHelpAdmin"
 
-func (app *application) helloWorldAdmin(c tele.Context) error {
-	app.logger.Info(opHelloWorldHandler,
-		slog.String("id", c.Sender().Username))
+func (app *application) startAndHelpAdmin(c tele.Context) error {
+	app.logger.Info(opStartAndHelpAdmin,
+		slog.String("username", c.Sender().Username))
 
 	return c.Send(
 		app.adminTemplates.Render(admin.StartInfo))
+}
+
+const opSubmit = "admin_bot.submitSchedule"
+
+func (app *application) submitSchedule(c tele.Context) error {
+	app.logger.Info(opSubmit,
+		slog.String("username", c.Sender().Username))
+
+	return c.Send(
+		app.adminTemplates.Render(admin.SubmitInfo))
 }
