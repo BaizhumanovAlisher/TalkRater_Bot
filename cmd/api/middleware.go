@@ -3,6 +3,7 @@ package main
 import (
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
+	"talk_rater_bot/internal/templates/admin"
 	"time"
 )
 
@@ -16,7 +17,7 @@ func (app *application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 					slog.String("username", c.Sender().Username),
 					slog.String("panic", r.(error).Error()))
 
-				c.Send("internal server error")
+				_ = c.Send("internal server error")
 			}
 		}()
 
@@ -55,7 +56,7 @@ func (app *application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 			app.logger.Info(op,
 				slog.String("username", username),
 				slog.String("info", "failed authorization"))
-			return c.Send("access denied") // TODO: add return access denied
+			return c.Send(app.adminTemplates.Render(admin.AccessDeniedError))
 		}
 	}
 }

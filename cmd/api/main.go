@@ -10,6 +10,8 @@ import (
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"talk_rater_bot/internal/templates"
+	"talk_rater_bot/internal/templates/admin"
+	"talk_rater_bot/internal/templates/user"
 	"time"
 )
 
@@ -22,18 +24,23 @@ func main() {
 	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
 	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
 	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
-	render, err := templates.NewRender(os.Getenv("TEMPLATE_PATH"))
 
+	adminTemplates, err := templates.NewTemplates(os.Getenv("TEMPLATE_PATH"), admin.DirectoryName, admin.FilesName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	userTemplates, err := templates.NewTemplates(os.Getenv("TEMPLATE_PATH"), user.DirectoryName, user.FilesName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	app := application{
-		logger:   logger,
-		userBot:  userBot,
-		adminBot: adminBot,
-		adminDB:  adminDB,
-		render:   render,
+		logger:         logger,
+		userBot:        userBot,
+		adminBot:       adminBot,
+		adminDB:        adminDB,
+		adminTemplates: adminTemplates,
+		userTemplates:  userTemplates,
 	}
 
 	app.routes()
@@ -56,11 +63,12 @@ func main() {
 }
 
 type application struct {
-	logger   *slog.Logger
-	userBot  *tele.Bot
-	adminBot *tele.Bot
-	adminDB  *databases.AdminDB
-	render   *templates.Render
+	logger         *slog.Logger
+	userBot        *tele.Bot
+	adminBot       *tele.Bot
+	adminDB        *databases.AdminDB
+	adminTemplates *templates.Templates
+	userTemplates  *templates.Templates
 }
 
 func (app *application) run() {

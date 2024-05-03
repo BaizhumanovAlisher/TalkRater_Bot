@@ -9,7 +9,7 @@ type Lecture struct {
 	Id      int64
 	Name    string
 	Speaker string
-	URL     string //check contains unique
+	URL     string
 	Start   time.Time
 	End     time.Time
 }
