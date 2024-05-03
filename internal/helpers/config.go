@@ -16,7 +16,7 @@ type Config struct {
 
 	ClearDbForNewConference bool             `yaml:"clear_db" env-default:"true"`
 	ConferenceConfig        ConferenceConfig `yaml:"conference" env-required:"true"`
-	SecretPath              SecretPath       `yaml:"secret"` // no parsing in config file is required. only for env
+	EnvVars                 EnvVars          `yaml:"secret"` // no parsing in config file is required. only for env
 	DatabaseConfig          DatabaseConfig   `yaml:"database" env-required:"true"`
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
@@ -33,11 +33,11 @@ func MustLoadConfig() *Config {
 		log.Fatalf("can not read config: %s", err)
 	}
 
-	dbPassword := LoadOneSecret(cfg.SecretPath.DatabasePasswordPathFile)
+	dbPassword := LoadOneSecret(cfg.EnvVars.DatabasePasswordPathFile)
 	cfg.DatabaseConfig.compile(dbPassword)
 
-	tokenUser := LoadOneSecret(cfg.SecretPath.TgTokenUserPathFile)
-	tokenAdminPanel := LoadOneSecret(cfg.SecretPath.TgTokenAdminPanelPathFile)
+	tokenUser := LoadOneSecret(cfg.EnvVars.TgTokenUserPathFile)
+	tokenAdminPanel := LoadOneSecret(cfg.EnvVars.TgTokenAdminPanelPathFile)
 
 	cfg.TgBotSettings.TokenUser = tokenUser
 	cfg.TgBotSettings.TokenAdminPanel = tokenAdminPanel
@@ -56,10 +56,12 @@ type ConferenceConfig struct {
 	EndEvaluationTime string `yaml:"end_evaluation_time" env-required:"true"`
 }
 
-type SecretPath struct {
+type EnvVars struct {
 	DatabasePasswordPathFile  string `env:"DB_PASSWORD_FILE" env-required:"true"`
 	TgTokenUserPathFile       string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
 	TgTokenAdminPanelPathFile string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
+	PathLogs                  string `env:"PATH_LOGS"`
+	TemplatePath              string `env:"TEMPLATE_PATH" env-required:"true"`
 }
 
 func LoadOneSecret(pathToFile string) string {

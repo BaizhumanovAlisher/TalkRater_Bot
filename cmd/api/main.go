@@ -18,18 +18,18 @@ import (
 func main() {
 	cfg := helpers.MustLoadConfig()
 
-	logger := helpers.SetupLogger(cfg.Env)
+	logger := helpers.SetupLogger(cfg.Env, cfg.EnvVars.PathLogs)
 	slog.SetDefault(logger)
 
 	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
 	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
 	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
 
-	adminTemplates, err := templates.NewTemplates(os.Getenv("TEMPLATE_PATH"), admin.DirectoryName, admin.FilesName)
+	adminTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, admin.DirectoryName, admin.FilesName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	userTemplates, err := templates.NewTemplates(os.Getenv("TEMPLATE_PATH"), user.DirectoryName, user.FilesName)
+	userTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, user.DirectoryName, user.FilesName)
 	if err != nil {
 		log.Fatal(err)
 	}

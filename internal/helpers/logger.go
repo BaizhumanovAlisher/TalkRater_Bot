@@ -9,11 +9,10 @@ import (
 
 const ()
 
-func SetupLogger(env string) *slog.Logger {
+func SetupLogger(env string, pathLogs string) *slog.Logger {
 	switch env {
 	case "prod":
-		pathFile := os.Getenv("PATH_LOGS")
-		file, err := os.OpenFile(pathFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		file, err := os.OpenFile(pathLogs, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 		if err != nil {
 			log.Fatalf("error in opening log file: %s", err)
 		}
