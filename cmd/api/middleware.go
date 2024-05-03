@@ -33,12 +33,12 @@ func (app *application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 
 		result := next(c)
 
-		timeEnd := time.Now()
+		duration := time.Now().Sub(timeStart)
 
 		app.logger.Info(op,
 			slog.String("username", c.Sender().Username),
 			slog.String("text", c.Text()),
-			slog.Int64("time ms", timeEnd.Sub(timeStart).Milliseconds()),
+			slog.Duration("duration", duration),
 		)
 
 		return result

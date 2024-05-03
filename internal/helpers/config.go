@@ -104,7 +104,7 @@ func (dc *DatabaseConfig) compile(password string) {
 type KVDatabaseConfig struct {
 	Addr     string `yaml:"addr" env-required:"true"`
 	Password string `yaml:"-"` // Password will be downloaded from secrets
-	DB       int32  `yaml:"db" env-required:"true"`
+	DB       int32  `yaml:"db"`
 }
 
 func (kv *KVDatabaseConfig) compile(password string) {
