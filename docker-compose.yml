@@ -18,14 +18,27 @@ services:
       - talk_rater_data:/var/lib/postgresql/data
       - ./secrets/db_password.txt:/run/secrets/db_password.txt
 
+  redis:
+    image: redis:7.2.4-alpine
+    command: sh -c 'redis-server --requirepass $$(cat /run/secrets/kv_db_password.txt)'
+    ports:
+      - '9001:6379'
+    networks:
+      - backend
+    volumes:
+      - redis_data:/data
+      - ./secrets/kv_db_password.txt:/run/secrets/kv_db_password.txt
+
   talk_rater_bot:
     depends_on:
       - talk_rater_db
+      - redis
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       DB_PASSWORD_FILE: /run/secrets/db_password.txt
+      KV_DB_PASSWORD_FILE: /run/secrets/kv_db_password.txt
       TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user.txt
       TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin.txt
       CONFIG_PATH_TG_BOT: /run/configs/local.yaml
@@ -47,4 +60,6 @@ networks:
 
 volumes:
   talk_rater_data:
+    driver: local
+  redis_data:
     driver: local

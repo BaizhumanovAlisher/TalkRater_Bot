@@ -18,6 +18,7 @@ type Config struct {
 	ConferenceConfig        ConferenceConfig `yaml:"conference" env-required:"true"`
 	EnvVars                 EnvVars          `yaml:"secret"` // no parsing in config file is required. only for env
 	DatabaseConfig          DatabaseConfig   `yaml:"database" env-required:"true"`
+	KVDatabase              KVDatabaseConfig `yaml:"kv_database" env-required:"true"`
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
@@ -35,6 +36,9 @@ func MustLoadConfig() *Config {
 
 	dbPassword := LoadOneSecret(cfg.EnvVars.DatabasePasswordPathFile)
 	cfg.DatabaseConfig.compile(dbPassword)
+
+	kvDbPassword := LoadOneSecret(cfg.EnvVars.KVDatabasePasswordPathFile)
+	cfg.KVDatabase.compile(kvDbPassword)
 
 	tokenUser := LoadOneSecret(cfg.EnvVars.TgTokenUserPathFile)
 	tokenAdminPanel := LoadOneSecret(cfg.EnvVars.TgTokenAdminPanelPathFile)
@@ -57,11 +61,12 @@ type ConferenceConfig struct {
 }
 
 type EnvVars struct {
-	DatabasePasswordPathFile  string `env:"DB_PASSWORD_FILE" env-required:"true"`
-	TgTokenUserPathFile       string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
-	TgTokenAdminPanelPathFile string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
-	PathLogs                  string `env:"PATH_LOGS"`
-	TemplatePath              string `env:"TEMPLATE_PATH" env-required:"true"`
+	DatabasePasswordPathFile   string `env:"DB_PASSWORD_FILE" env-required:"true"`
+	KVDatabasePasswordPathFile string `env:"KV_DB_PASSWORD_FILE" env-required:"true"`
+	TgTokenUserPathFile        string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
+	TgTokenAdminPanelPathFile  string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
+	PathLogs                   string `env:"PATH_LOGS"`
+	TemplatePath               string `env:"TEMPLATE_PATH" env-required:"true"`
 }
 
 func LoadOneSecret(pathToFile string) string {
@@ -78,12 +83,14 @@ type DatabaseConfig struct {
 	Port         int    `yaml:"port" env-required:"true"`
 	User         string `yaml:"user" env-required:"true"`
 	DatabaseName string `yaml:"database_name" env-required:"true"`
-	// Password will be downloaded from secrets
+	Password     string `yaml:"-"` // Password will be downloaded from secrets
 
 	CompiledFullPath string
 }
 
 func (dc *DatabaseConfig) compile(password string) {
+	dc.Password = password
+
 	dc.CompiledFullPath = fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		dc.Host,
@@ -92,6 +99,16 @@ func (dc *DatabaseConfig) compile(password string) {
 		password,
 		dc.DatabaseName,
 	)
+}
+
+type KVDatabaseConfig struct {
+	Addr     string `yaml:"addr" env-required:"true"`
+	Password string `yaml:"-"` // Password will be downloaded from secrets
+	DB       int32  `yaml:"db" env-required:"true"`
+}
+
+func (kv *KVDatabaseConfig) compile(password string) {
+	kv.Password = password
 }
 
 type TgBotSettings struct {
