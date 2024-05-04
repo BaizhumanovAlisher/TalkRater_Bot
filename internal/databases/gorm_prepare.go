@@ -82,9 +82,11 @@ func (ph *PrepareDBHelper) backupDatabase() error {
 
 	err := cmd.Run()
 	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
+		var exitError *exec.ExitError
+		if errors.As(err, &exitError) {
 			return fmt.Errorf("pg_dump exited with status %d: %v", exitError.ExitCode(), err)
 		}
+
 		return fmt.Errorf("failed to run pg_dump: %v", err)
 	}
 
