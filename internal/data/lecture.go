@@ -1,17 +1,21 @@
 package data
 
 import (
+	"gorm.io/gorm"
 	"talk_rater_bot/internal/validator"
 	"time"
 )
 
 type Lecture struct {
-	Id      int64
+	ID      int64 // ID parsed from URL
 	Name    string
 	Speaker string
-	URL     string
-	Start   time.Time
+	URL     string    `gorm:"unique;index"`
+	Start   time.Time `gorm:"index"`
 	End     time.Time
+
+	UsersInFavourite []*User        `gorm:"many2many:user_lectures;"` // Only for gorm. Many2Many
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
 }
 
 func (l *Lecture) Duration() time.Duration {

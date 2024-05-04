@@ -6,7 +6,7 @@ import (
 )
 
 type Conference struct {
-	Name              string
+	Name              string `gorm:"primaryKey"`
 	URL               string
 	StartTime         time.Time
 	EndTime           time.Time

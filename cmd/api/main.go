@@ -2,6 +2,8 @@ package main
 
 import (
 	tele "gopkg.in/telebot.v3"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"log/slog"
 	"talk_rater_bot/internal/databases"
@@ -19,13 +21,22 @@ func main() {
 
 	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
 	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
-	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
 
 	adminTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, admin.DirectoryName, admin.FilesName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	userTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, user.DirectoryName, user.FilesName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
+	db, err := gorm.Open(postgres.Open(cfg.DatabaseConfig.CompiledFullPath), &gorm.Config{
+		Logger: helpers.NewSlogLoggerDB(logger),
+	})
+
+	err = databases.AutoMigrateAllModels(db)
 	if err != nil {
 		log.Fatal(err)
 	}
