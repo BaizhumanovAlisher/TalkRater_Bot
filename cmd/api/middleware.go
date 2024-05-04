@@ -37,7 +37,6 @@ func (app *application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 
 		app.logger.Info(op,
 			slog.String("username", c.Sender().Username),
-			slog.String("text", c.Text()),
 			slog.Duration("duration", duration),
 		)
 
