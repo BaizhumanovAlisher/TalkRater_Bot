@@ -17,7 +17,8 @@ RUN go test -v ./...
 # Deploy the application binary into a lean image
 FROM alpine AS build-release-stage
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata # it is for time.Location
+RUN apk add --no-cache postgresql-client
 
 WORKDIR /
 
