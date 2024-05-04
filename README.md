@@ -25,7 +25,7 @@ export PATH_TMP="$(pwd)/tmp_files"
 export TEMPLATE_PATH="$(pwd)/templates"
 ```
 
-If you try to run project in Windows OS without containers, you can get some problems, because application is using Unix filesystem.
+It is preferred to run in linux environment because it was not tested in windows.
 
 ## Env variable for logger
 It is in `config/local.yaml`, var is `env`.
