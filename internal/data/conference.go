@@ -25,23 +25,6 @@ func ValidateConference(v *validator.Validator, conf *Conference) {
 	v.Check(conf.EndTime.Before(conf.EndEvaluationTime), "end and end evaluation time", "End time must be before End evaluation time")
 }
 
-const (
-	FileLayout = "02/01/2006 15:04:05"
-)
-
-func ParseTimeString(timeString string, location *time.Location, layout string) (time.Time, error) {
-	t, err := time.ParseInLocation(layout, timeString, location)
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	return t, nil
-}
-
-func ConvertTime(t time.Time, location *time.Location, layout string) string {
-	return t.In(location).Format(layout)
-}
-
 func AreEqualConferences(c1 *Conference, c2 *Conference) bool {
 	if c1 == c2 {
 		return true

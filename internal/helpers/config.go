@@ -22,7 +22,7 @@ type Config struct {
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
-	Location      *time.Location   `yaml:"-"`
+	TimeParser    *TimeParser      `yaml:"-"`
 }
 
 func MustLoadConfig() *Config {
@@ -45,9 +45,15 @@ func MustLoadConfig() *Config {
 
 	cfg.TgBotSettings.TokenUser = tokenUser
 	cfg.TgBotSettings.TokenAdminPanel = tokenAdminPanel
+	cfg.TgBotSettings.validateAdmins()
+
+	var err error
+	cfg.TimeParser, err = NewTimeParserInMoscow()
+	if err != nil {
+		log.Fatalf("can not create time parser: %s", err)
+	}
 
 	cfg.MustLoadConference()
-	cfg.TgBotSettings.validateAdmins()
 
 	return &cfg
 }
@@ -134,17 +140,17 @@ func (tbs *TgBotSettings) validateAdmins() {
 }
 
 func (cfg *Config) convertConference(confStr *ConferenceConfig) (*data.Conference, error) {
-	startTime, err := data.ParseTimeString(confStr.StartTime, cfg.Location, data.FileLayout)
+	startTime, err := cfg.TimeParser.ParseTimeString(confStr.StartTime)
 	if err != nil {
 		return nil, err
 	}
 
-	endTime, err := data.ParseTimeString(confStr.EndTime, cfg.Location, data.FileLayout)
+	endTime, err := cfg.TimeParser.ParseTimeString(confStr.EndTime)
 	if err != nil {
 		return nil, err
 	}
 
-	endEvaluationTime, err := data.ParseTimeString(confStr.EndEvaluationTime, cfg.Location, data.FileLayout)
+	endEvaluationTime, err := cfg.TimeParser.ParseTimeString(confStr.EndEvaluationTime)
 	if err != nil {
 		return nil, err
 	}
@@ -159,12 +165,6 @@ func (cfg *Config) convertConference(confStr *ConferenceConfig) (*data.Conferenc
 }
 
 func (cfg *Config) MustLoadConference() {
-	location, err := time.LoadLocation("Europe/Moscow")
-	if err != nil {
-		log.Fatalf("can not load location: %s", err)
-	}
-	cfg.Location = location
-
 	conference, err := cfg.convertConference(&cfg.ConferenceConfig)
 	if err != nil {
 		log.Fatalf("can not convert conference: %s", err)
