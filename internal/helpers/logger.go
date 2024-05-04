@@ -41,7 +41,7 @@ func NewSlogLoggerDB(logger *slog.Logger) *SlogLoggerDB {
 	return &SlogLoggerDB{logger: logger}
 }
 
-func (s *SlogLoggerDB) LogMode(level logger.LogLevel) logger.Interface {
+func (s *SlogLoggerDB) LogMode(_ logger.LogLevel) logger.Interface {
 	return s
 }
 
