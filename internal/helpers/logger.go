@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"context"
-	"fmt"
 	"gorm.io/gorm/logger"
 	"io"
 	"log"
@@ -14,7 +13,7 @@ import (
 func SetupLogger(env string, pathLogs string) *slog.Logger {
 	switch env {
 	case "prod":
-		file, err := os.OpenFile(pathLogs, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		file, err := os.OpenFile(pathLogs+string(os.PathSeparator)+"logs.json", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 		if err != nil {
 			log.Fatalf("error in opening log file: %s", err)
 		}
@@ -32,7 +31,7 @@ func SetupLogger(env string, pathLogs string) *slog.Logger {
 	}
 }
 
-const opLoggerDb = "logger db"
+const opLoggerDb = "logger.db"
 
 type SlogLoggerDB struct {
 	logger *slog.Logger
@@ -47,48 +46,24 @@ func (s *SlogLoggerDB) LogMode(level logger.LogLevel) logger.Interface {
 }
 
 func (s *SlogLoggerDB) Info(ctx context.Context, info string, args ...interface{}) {
-	fields := make([]slog.Attr, 0, len(args)+1)
-
-	// Add the message to the fields
-	fields = append(fields, slog.String("info", info))
-
-	// Iterate over the args and add each one to the fields
-	for i, arg := range args {
-		fields = append(fields, slog.Any(fmt.Sprintf("args %d", i), arg))
-	}
-
-	// Log the fields
-	s.logger.InfoContext(ctx, opLoggerDb, fields)
+	s.logger.InfoContext(ctx, opLoggerDb,
+		slog.String("info", info),
+		slog.Any("args", args),
+	)
 }
 
 func (s *SlogLoggerDB) Warn(ctx context.Context, info string, args ...interface{}) {
-	fields := make([]slog.Attr, 0, len(args)+1)
-
-	// Add the message to the fields
-	fields = append(fields, slog.String("info", info))
-
-	// Iterate over the args and add each one to the fields
-	for i, arg := range args {
-		fields = append(fields, slog.Any(fmt.Sprintf("args %d", i), arg))
-	}
-
-	// Log the fields
-	s.logger.InfoContext(ctx, opLoggerDb, fields)
+	s.logger.WarnContext(ctx, opLoggerDb,
+		slog.String("info", info),
+		slog.Any("args", args),
+	)
 }
 
 func (s *SlogLoggerDB) Error(ctx context.Context, info string, args ...interface{}) {
-	fields := make([]slog.Attr, 0, len(args)+1)
-
-	// Add the message to the fields
-	fields = append(fields, slog.String("info", info))
-
-	// Iterate over the args and add each one to the fields
-	for i, arg := range args {
-		fields = append(fields, slog.Any(fmt.Sprintf("args %d", i), arg))
-	}
-
-	// Log the fields
-	s.logger.InfoContext(ctx, opLoggerDb, fields)
+	s.logger.ErrorContext(ctx, opLoggerDb,
+		slog.String("info", info),
+		slog.Any("args", args),
+	)
 }
 
 func (s *SlogLoggerDB) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
