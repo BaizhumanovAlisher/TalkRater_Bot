@@ -16,7 +16,7 @@ import (
 func main() {
 	cfg := helpers.MustLoadConfig()
 
-	logger := helpers.SetupLogger(cfg.Env, cfg.EnvVars.PathLogs)
+	logger := helpers.SetupLogger(cfg.Env, cfg.EnvVars.PathTmp)
 	slog.SetDefault(logger)
 
 	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
@@ -36,7 +36,8 @@ func main() {
 		Logger: helpers.NewSlogLoggerDB(logger),
 	})
 
-	err = databases.AutoMigrateAllModels(db)
+	dbHelper := databases.NewPrepareDBHelper(db, cfg.Conference, cfg.CleanupDBForNewConference, &cfg.DatabaseConfig, cfg.EnvVars.PathTmp)
+	err = dbHelper.PrepareDB()
 	if err != nil {
 		log.Fatal(err)
 	}
