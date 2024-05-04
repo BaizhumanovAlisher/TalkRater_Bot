@@ -28,7 +28,7 @@ func NewTemplates(path string, directoryNames string, filesName []string) (*Temp
 	return render, nil
 }
 
-func (t *Templates) Render(page string, args ...any) string {
+func (t *Templates) Render(page string, args ...string) string {
 	file, ok := t.fileTemplates[page]
 	if !ok {
 		// name page is inner type of response
