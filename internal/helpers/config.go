@@ -14,11 +14,11 @@ import (
 type Config struct {
 	Env string `yaml:"env" env-required:"true"`
 
-	ClearDbForNewConference bool             `yaml:"clear_db" env-default:"true"`
-	ConferenceConfig        ConferenceConfig `yaml:"conference" env-required:"true"`
-	EnvVars                 EnvVars          `yaml:"secret"` // no parsing in config file is required. only for env
-	DatabaseConfig          DatabaseConfig   `yaml:"database" env-required:"true"`
-	KVDatabase              KVDatabaseConfig `yaml:"kv_database" env-required:"true"`
+	CleanupDBForNewConference bool             `yaml:"clear_db" env-default:"true"`
+	ConferenceConfig          ConferenceConfig `yaml:"conference" env-required:"true"`
+	EnvVars                   EnvVars          `yaml:"secret"` // no parsing in config file is required. only for env
+	DatabaseConfig            DatabaseConfig   `yaml:"database" env-required:"true"`
+	KVDatabase                KVDatabaseConfig `yaml:"kv_database" env-required:"true"`
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
@@ -65,7 +65,7 @@ type EnvVars struct {
 	KVDatabasePasswordPathFile string `env:"KV_DB_PASSWORD_FILE" env-required:"true"`
 	TgTokenUserPathFile        string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
 	TgTokenAdminPanelPathFile  string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
-	PathLogs                   string `env:"PATH_LOGS"`
+	PathTmp                    string `env:"PATH_TMP"`
 	TemplatePath               string `env:"TEMPLATE_PATH" env-required:"true"`
 }
 

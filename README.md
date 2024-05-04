@@ -21,7 +21,7 @@ export KV_DB_PASSWORD_FILE="$(pwd)/secrets/kv_db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
-export PATH_LOGS="$(pwd)/tmp_files/logs.json"
+export PATH_TMP="$(pwd)/tmp_files"
 export TEMPLATE_PATH="$(pwd)/templates"
 ```
 
