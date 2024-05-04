@@ -41,3 +41,18 @@ func ParseTimeString(timeString string, location *time.Location, layout string) 
 func ConvertTime(t time.Time, location *time.Location, layout string) string {
 	return t.In(location).Format(layout)
 }
+
+func AreEqualConferences(c1 *Conference, c2 *Conference) bool {
+	if c1 == c2 {
+		return true
+	}
+
+	if c1 == nil || c2 == nil {
+		return false
+	}
+
+	return c1.Name == c2.Name && c1.URL == c2.URL &&
+		c1.StartTime.Equal(c2.StartTime) &&
+		c1.EndTime.Equal(c2.EndTime) &&
+		c1.EndEvaluationTime.Equal(c2.EndEvaluationTime)
+}
