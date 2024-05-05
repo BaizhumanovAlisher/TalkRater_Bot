@@ -22,7 +22,7 @@ func (app *application) adminBotRoutes() {
 
 	app.adminBot.Handle("/start", app.startAndHelpAdmin)
 	app.adminBot.Handle("/help", app.startAndHelpAdmin)
-	app.adminBot.Handle("/submit", app.submitSchedule)
+	app.adminBot.Handle(tele.OnDocument, app.submitSchedule)
 }
 
 func setupBot(token string, timeout time.Duration) *tele.Bot {

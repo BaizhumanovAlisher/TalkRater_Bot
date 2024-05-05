@@ -54,6 +54,8 @@ func main() {
 		adminDB:        adminDB,
 		adminTemplates: adminTemplates,
 		userTemplates:  userTemplates,
+		timeParser:     cfg.TimeParser,
+		pathTmp:        cfg.EnvVars.PathTmp,
 	}
 
 	app.routes()
@@ -94,6 +96,8 @@ type application struct {
 	adminDB        *databases.AdminDB
 	adminTemplates *templates.Templates
 	userTemplates  *templates.Templates
+	timeParser     *helpers.TimeParser
+	pathTmp        string
 }
 
 func (app *application) run() {
