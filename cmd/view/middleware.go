@@ -1,4 +1,4 @@
-package main
+package view
 
 import (
 	tele "gopkg.in/telebot.v3"
@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-func (app *application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
+func (app *Application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.recoverPanic"
 
 	return func(c tele.Context) error {
 		defer func() {
 			if r := recover(); r != nil {
-				app.logger.Warn(op,
+				app.Logger.Warn(op,
 					slog.String("username", c.Sender().Username),
 					slog.String("panic", r.(error).Error()))
 
@@ -25,7 +25,7 @@ func (app *application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 	}
 }
 
-func (app *application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
+func (app *Application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.measureTime"
 
 	return func(c tele.Context) error {
@@ -35,7 +35,7 @@ func (app *application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 
 		duration := time.Now().Sub(timeStart)
 
-		app.logger.Info(op,
+		app.Logger.Info(op,
 			slog.String("username", c.Sender().Username),
 			slog.Duration("duration", duration),
 		)
@@ -44,18 +44,18 @@ func (app *application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 	}
 }
 
-func (app *application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
+func (app *Application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.checkAdmin"
 
 	return func(c tele.Context) error {
 		username := c.Sender().Username
-		if app.adminDB.IsAdmin(username) {
+		if app.AdminDB.IsAdmin(username) {
 			return next(c)
 		} else {
-			app.logger.Info(op,
+			app.Logger.Info(op,
 				slog.String("username", username),
 				slog.String("info", "failed authorization"))
-			return c.Send(app.adminTemplates.Render(admin.AccessDeniedError, nil))
+			return c.Send(app.AdminTemplates.Render(admin.AccessDeniedError, nil))
 		}
 	}
 }

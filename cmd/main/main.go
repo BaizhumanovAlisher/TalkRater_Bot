@@ -4,12 +4,15 @@ import (
 	tele "gopkg.in/telebot.v3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"log/slog"
+	"talk_rater_bot/cmd/view"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"talk_rater_bot/internal/templates"
 	"talk_rater_bot/internal/templates/admin"
 	"talk_rater_bot/internal/templates/user"
+	"time"
 )
 
 const op = "main.main"
@@ -47,19 +50,19 @@ func main() {
 		panic(err)
 	}
 
-	app := application{
-		logger:         logger,
-		userBot:        userBot,
-		adminBot:       adminBot,
-		adminDB:        adminDB,
-		adminTemplates: adminTemplates,
-		userTemplates:  userTemplates,
-		timeParser:     cfg.TimeParser,
-		pathTmp:        cfg.EnvVars.PathTmp,
+	app := view.Application{
+		Logger:         logger,
+		UserBot:        userBot,
+		AdminBot:       adminBot,
+		AdminDB:        adminDB,
+		AdminTemplates: adminTemplates,
+		UserTemplates:  userTemplates,
+		TimeParser:     cfg.TimeParser,
+		PathTmp:        cfg.EnvVars.PathTmp,
 	}
 
-	app.routes()
-	app.run()
+	app.Routes()
+	app.Run()
 
 	logger.Info(op, slog.String("info", "Start application..."))
 	logger.Info(op, slog.String("info", "conference"),
@@ -74,8 +77,8 @@ func main() {
 
 	logger.Info(op, slog.String("info", "Stop application. Started to stop"))
 
-	app.userBot.Stop()
-	app.adminBot.Stop()
+	app.UserBot.Stop()
+	app.AdminBot.Stop()
 	sqlDB, _ := db.DB()
 	if err != nil {
 		logger.Warn(op,
@@ -89,18 +92,15 @@ func main() {
 	logger.Info(op, slog.String("info", "Stop application. Ended to stop"))
 }
 
-type application struct {
-	logger         *slog.Logger
-	userBot        *tele.Bot
-	adminBot       *tele.Bot
-	adminDB        *databases.AdminDB
-	adminTemplates *templates.Templates
-	userTemplates  *templates.Templates
-	timeParser     *helpers.TimeParser
-	pathTmp        string
-}
+func setupBot(token string, timeout time.Duration) *tele.Bot {
+	pref := tele.Settings{
+		Token:  token,
+		Poller: &tele.LongPoller{Timeout: timeout},
+	}
 
-func (app *application) run() {
-	go app.userBot.Start()
-	go app.adminBot.Start()
+	b, err := tele.NewBot(pref)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return b
 }
