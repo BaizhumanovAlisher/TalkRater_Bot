@@ -19,7 +19,7 @@ func SetupLogger(env string, pathLogs string) *slog.Logger {
 		}
 
 		return slog.New(slog.NewJSONHandler(io.MultiWriter(file, os.Stdout), &slog.HandlerOptions{
-			Level: slog.LevelError,
+			Level: slog.LevelInfo,
 		}))
 	case "local":
 		return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
