@@ -4,7 +4,6 @@ import (
 	tele "gopkg.in/telebot.v3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 	"log/slog"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
@@ -28,12 +27,12 @@ func main() {
 	adminTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, admin.DirectoryName, admin.FilesName)
 	if err != nil {
 		logger.Warn(op, slog.String("error", err.Error()))
-		log.Fatal(err)
+		panic(err)
 	}
 	userTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, user.DirectoryName, user.FilesName)
 	if err != nil {
 		logger.Warn(op, slog.String("error", err.Error()))
-		log.Fatal(err)
+		panic(err)
 	}
 
 	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
@@ -45,7 +44,7 @@ func main() {
 	err = dbHelper.PrepareDB()
 	if err != nil {
 		logger.Warn(op, slog.String("error", err.Error()))
-		log.Fatal(err)
+		panic(err)
 	}
 
 	app := application{
