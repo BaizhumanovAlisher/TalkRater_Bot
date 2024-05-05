@@ -1,8 +1,12 @@
 Возникла ошибка выполнения.
 
-Может быть 2 типа ошибки:
-- ошибка валидации данных (Bad Request)
-- ошибка исполнения (Internal Server Error)
+Описание ошибки: {{ .Error }}
+{{ if .Lecture}}
 
-Описание ошибки:
-%s
+Доклад:
+    Name      - {{ .Lecture.Name }}
+    Speaker   - {{ .Lecture.Speaker }}
+    URL       - {{ .Lecture.URL }}
+    StartTime - {{ .Lecture.StartTime }}
+    EndTime   - {{ .Lecture.EndTime }}
+{{ end }}

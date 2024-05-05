@@ -1,44 +1,56 @@
 package templates
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"text/template"
 )
 
 type Templates struct {
-	fileTemplates map[string]string
+	fileTemplates map[string]*template.Template
 }
 
 func NewTemplates(path string, directoryNames string, filesName []string) (*Templates, error) {
-	render := &Templates{
-		fileTemplates: make(map[string]string),
+	templates := &Templates{
+		fileTemplates: make(map[string]*template.Template),
 	}
 
 	for _, fileName := range filesName {
-		file, err := os.ReadFile(
-			path + string(os.PathSeparator) + directoryNames + string(os.PathSeparator) + fileName)
+		fullPath := path + string(os.PathSeparator) + directoryNames + string(os.PathSeparator) + fileName
+		file, err := os.ReadFile(fullPath)
 
 		if err != nil {
 			return nil, err
 		}
+		ts, err := template.New(fileName).Parse(string(file))
+		if err != nil {
+			return nil, err
+		}
 
-		render.fileTemplates[fileName] = string(file)
+		templates.fileTemplates[fileName] = ts
 	}
 
-	return render, nil
+	return templates, nil
 }
 
-func (t *Templates) Render(page string, args ...string) string {
-	file, ok := t.fileTemplates[page]
+func (t *Templates) Render(page string, data *TemplateData) string {
+	if data == nil {
+		data = &TemplateData{}
+	}
+
+	tmpl, ok := t.fileTemplates[page]
 	if !ok {
 		// name page is inner type of response
 		// you should use const
 		panic(fmt.Sprintf("template not found, page: %s", page))
 	}
 
-	if len(args) == 0 {
-		return file
-	} else {
-		return fmt.Sprintf(file, args)
+	var out bytes.Buffer
+	err := tmpl.Execute(&out, data)
+	if err != nil {
+		panic(err)
 	}
+
+	return out.String()
 }

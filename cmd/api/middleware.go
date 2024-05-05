@@ -55,7 +55,7 @@ func (app *application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 			app.logger.Info(op,
 				slog.String("username", username),
 				slog.String("info", "failed authorization"))
-			return c.Send(app.adminTemplates.Render(admin.AccessDeniedError))
+			return c.Send(app.adminTemplates.Render(admin.AccessDeniedError, nil))
 		}
 	}
 }
