@@ -35,10 +35,6 @@ func NewTemplates(path string, directoryNames string, filesName []string) (*Temp
 }
 
 func (t *Templates) Render(page string, data *TemplateData) string {
-	if data == nil {
-		data = &TemplateData{}
-	}
-
 	tmpl, ok := t.fileTemplates[page]
 	if !ok {
 		// name page is inner type of response

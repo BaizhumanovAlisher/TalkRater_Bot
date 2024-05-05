@@ -8,7 +8,7 @@ import (
 )
 
 func (app *application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
-	const op = "middleware.logRequest"
+	const op = "middleware.recoverPanic"
 
 	return func(c tele.Context) error {
 		defer func() {
