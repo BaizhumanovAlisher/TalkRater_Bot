@@ -8,7 +8,7 @@ import (
 
 type Lecture struct {
 	ID      int64 // ID parsed from URL
-	Name    string
+	Title   string
 	Speaker string
 	URL     string    `gorm:"unique;index"`
 	Start   time.Time `gorm:"index"`
@@ -23,7 +23,7 @@ func (l *Lecture) Duration() time.Duration {
 }
 
 func ValidateLecture(v *validator.Validator, lect *Lecture) {
-	v.Check(lect.Name != "", "name", "Name is required")
+	v.Check(lect.Title != "", "name", "Title is required")
 	v.Check(lect.Speaker != "", "speaker", "Speaker is required")
 	v.Check(!lect.Start.IsZero(), "start", "Start time is required")
 	v.Check(!lect.End.IsZero(), "end", "End time is required")

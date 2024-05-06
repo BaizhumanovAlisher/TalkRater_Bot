@@ -14,7 +14,7 @@ type Conference struct {
 }
 
 func ValidateConference(v *validator.Validator, conf *Conference) {
-	v.Check(conf.Name != "", "name", "Name is required")
+	v.Check(conf.Name != "", "name", "Title is required")
 	v.Check(conf.URL != "", "url", "URL is required")
 
 	v.Check(!conf.StartTime.IsZero(), "start", "Start time is required")
