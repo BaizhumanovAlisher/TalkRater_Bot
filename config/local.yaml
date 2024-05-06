@@ -2,11 +2,11 @@ env: "local" # local, prod
 
 # example data of correct conference
 conference:
-  name: "YADRO GO MEETUP"
-  url: "https://www.youtube.com/live/PruUHpEDN4s?si=OStiaHDKOFORr7M8"
-  start_time: "28/03/2024 19:00:00" # time pattern from README.md
-  end_time: "28/03/2024 22:05:16"
-  end_evaluation_time: "28/03/2024 22:35:16"
+  name: "Golang Conf 2024"
+  url: "https://golangconf.ru/2024/"
+  start_time: "01/07/2024 19:00:00" # time pattern from README.md
+  end_time: "01/08/2024 22:05:16"
+  end_evaluation_time: "15/08/2024 22:35:16"
 
 # clear all DB if previous conference. Preferred to set true because only one conference can be saved
 clear_db_for_new_conference: true
