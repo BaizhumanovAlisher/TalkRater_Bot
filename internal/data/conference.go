@@ -1,7 +1,7 @@
 package data
 
 import (
-	"talk_rater_bot/internal/validator"
+	"talk_rater_bot/internal/validators"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type Conference struct {
 	EndEvaluationTime time.Time
 }
 
-func ValidateConference(v *validator.Validator, conf *Conference) {
+func ValidateConference(v *validators.Validator, conf *Conference) {
 	v.Check(conf.Name != "", "name", "Title is required")
 	v.Check(conf.URL != "", "url", "URL is required")
 

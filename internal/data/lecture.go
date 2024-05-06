@@ -2,7 +2,7 @@ package data
 
 import (
 	"gorm.io/gorm"
-	"talk_rater_bot/internal/validator"
+	"talk_rater_bot/internal/validators"
 	"time"
 )
 
@@ -22,7 +22,7 @@ func (l *Lecture) Duration() time.Duration {
 	return l.End.Sub(l.Start)
 }
 
-func ValidateLecture(v *validator.Validator, lect *Lecture) {
+func ValidateLecture(v *validators.Validator, lect *Lecture) {
 	v.Check(lect.Title != "", "name", "Title is required")
 	v.Check(lect.Speaker != "", "speaker", "Speaker is required")
 	v.Check(!lect.Start.IsZero(), "start", "Start time is required")

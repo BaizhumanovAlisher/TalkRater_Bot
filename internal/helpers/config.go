@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"talk_rater_bot/internal/data"
-	"talk_rater_bot/internal/validator"
+	"talk_rater_bot/internal/validators"
 	"time"
 )
 
@@ -125,10 +125,10 @@ type TgBotSettings struct {
 }
 
 func (tbs *TgBotSettings) validateAdmins() {
-	v := validator.New()
+	v := validators.New()
 
 	v.Check(len(tbs.Admins) > 0, "admins count", "Count of admins must be greater than 0")
-	v.Check(validator.Unique(tbs.Admins), "admins unique", "admins must be unique")
+	v.Check(validators.Unique(tbs.Admins), "admins unique", "admins must be unique")
 
 	for _, admin := range tbs.Admins {
 		v.Check(admin != "", "admins not empty", "admins must not be empty")
@@ -170,7 +170,7 @@ func (cfg *Config) MustLoadConference() {
 		log.Fatalf("can not convert conference: %s", err)
 	}
 
-	v := validator.New()
+	v := validators.New()
 	data.ValidateConference(v, conference)
 	if !v.Valid() {
 		log.Fatalf("can not validate conference: %v", v.Errors)

@@ -2,7 +2,7 @@ package data
 
 import (
 	"errors"
-	"talk_rater_bot/internal/validator"
+	"talk_rater_bot/internal/validators"
 )
 
 type Evaluation struct {
@@ -17,7 +17,7 @@ type Evaluation struct {
 	Comment          string
 }
 
-func ValidateEvaluation(v *validator.Validator, eval *Evaluation) {
+func ValidateEvaluation(v *validators.Validator, eval *Evaluation) {
 	// service should return errors in Russian for users, but for admins service can return in English
 	v.Check(eval.User.ID > 0, "user's id", "user's id должен быть больше нуля")
 	v.Check(eval.Lecture.ID > 0, "lecture's id", "lecture's id должен быть больше нуля")
