@@ -4,6 +4,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log/slog"
+	adminController "talk_rater_bot/cmd/controllers/admin"
 	"talk_rater_bot/cmd/view"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
@@ -38,19 +39,23 @@ func main() {
 		&gorm.Config{Logger: helpers.NewSlogLoggerDB(logger)})
 	checkError(err, logger)
 
-	dbHelper := databases.NewPrepareDBHelper(db, cfg.Conference, cfg.CleanupDBForNewConference, &cfg.DatabaseConfig, cfg.EnvVars.PathTmp)
+	dbHelper := databases.NewPrepareDBHelper(db,
+		cfg.Conference, cfg.CleanupDBForNewConference, &cfg.DatabaseConfig, cfg.EnvVars.PathTmp)
 	err = dbHelper.PrepareDB()
 	checkError(err, logger)
 
+	adminContr := adminController.NewController(db, cfg.TimeParser, cfg.Conference)
+
 	app := view.Application{
-		Logger:         logger,
-		UserBot:        userBot,
-		AdminBot:       adminBot,
-		AdminDB:        adminDB,
-		AdminTemplates: adminTemplates,
-		UserTemplates:  userTemplates,
-		TimeParser:     cfg.TimeParser,
-		PathTmp:        cfg.EnvVars.PathTmp,
+		Logger:          logger,
+		UserBot:         userBot,
+		AdminBot:        adminBot,
+		AdminDB:         adminDB,
+		AdminTemplates:  adminTemplates,
+		UserTemplates:   userTemplates,
+		TimeParser:      cfg.TimeParser,
+		PathTmp:         cfg.EnvVars.PathTmp,
+		AdminController: adminContr,
 	}
 
 	app.Routes()

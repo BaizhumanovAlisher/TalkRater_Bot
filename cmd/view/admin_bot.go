@@ -55,5 +55,26 @@ func (app *Application) submitSchedule(c tele.Context) error {
 		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
 	}
 
+	err = app.AdminController.GenerateSchedule(filePath)
+	if err != nil {
+		app.Logger.Error(opSubmit,
+			slog.String("username", c.Sender().Username),
+			slog.String("file path", filePath),
+			slog.String("error", err.Error()),
+		)
+
+		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: err.Error()}))
+	}
+
+	err = os.Remove(filePath)
+	if err != nil {
+		app.Logger.Error(opSubmit,
+			slog.String("username", c.Sender().Username),
+			slog.String("file path", filePath),
+			slog.String("error", err.Error()),
+			slog.String("info", "problem to delete file"),
+		)
+	}
+
 	return c.Send(app.AdminTemplates.Render(admin.SubmitSuccess, nil))
 }
