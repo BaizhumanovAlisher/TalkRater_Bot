@@ -1,10 +1,8 @@
 package main
 
 import (
-	tele "gopkg.in/telebot.v3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 	"log/slog"
 	"talk_rater_bot/cmd/view"
 	"talk_rater_bot/internal/databases"
@@ -12,7 +10,6 @@ import (
 	"talk_rater_bot/internal/templates"
 	"talk_rater_bot/internal/templates/admin"
 	"talk_rater_bot/internal/templates/user"
-	"time"
 )
 
 const op = "main.main"
@@ -24,31 +21,26 @@ func main() {
 	slog.SetDefault(logger)
 	logger.Info(op, slog.String("info", "Start building application..."))
 
-	userBot := setupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
-	adminBot := setupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
+	userBot, err := helpers.SetupBot(cfg.TgBotSettings.TokenUser, cfg.TgBotSettings.Timeout)
+	checkError(err, logger)
+
+	adminBot, err := helpers.SetupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
+	checkError(err, logger)
 
 	adminTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, admin.DirectoryName, admin.FilesName)
-	if err != nil {
-		logger.Warn(op, slog.String("error", err.Error()))
-		panic(err)
-	}
+	checkError(err, logger)
+
 	userTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, user.DirectoryName, user.FilesName)
-	if err != nil {
-		logger.Warn(op, slog.String("error", err.Error()))
-		panic(err)
-	}
+	checkError(err, logger)
 
 	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
-	db, err := gorm.Open(postgres.Open(cfg.DatabaseConfig.CompiledFullPath), &gorm.Config{
-		Logger: helpers.NewSlogLoggerDB(logger),
-	})
+	db, err := gorm.Open(postgres.Open(cfg.DatabaseConfig.CompiledFullPath),
+		&gorm.Config{Logger: helpers.NewSlogLoggerDB(logger)})
+	checkError(err, logger)
 
 	dbHelper := databases.NewPrepareDBHelper(db, cfg.Conference, cfg.CleanupDBForNewConference, &cfg.DatabaseConfig, cfg.EnvVars.PathTmp)
 	err = dbHelper.PrepareDB()
-	if err != nil {
-		logger.Warn(op, slog.String("error", err.Error()))
-		panic(err)
-	}
+	checkError(err, logger)
 
 	app := view.Application{
 		Logger:         logger,
@@ -79,7 +71,7 @@ func main() {
 
 	app.UserBot.Stop()
 	app.AdminBot.Stop()
-	sqlDB, _ := db.DB()
+	sqlDB, err := db.DB()
 	if err != nil {
 		logger.Warn(op,
 			slog.String("info", "problem to close database connections"),
@@ -92,15 +84,9 @@ func main() {
 	logger.Info(op, slog.String("info", "Stop application. Ended to stop"))
 }
 
-func setupBot(token string, timeout time.Duration) *tele.Bot {
-	pref := tele.Settings{
-		Token:  token,
-		Poller: &tele.LongPoller{Timeout: timeout},
-	}
-
-	b, err := tele.NewBot(pref)
+func checkError(err error, logger *slog.Logger) {
 	if err != nil {
-		log.Fatal(err)
+		logger.Warn(op, slog.String("error", err.Error()))
+		panic(err)
 	}
-	return b
 }
