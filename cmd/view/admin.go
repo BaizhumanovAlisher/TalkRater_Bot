@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const opStartAndHelpAdmin = "admin_views.startAndHelpAdmin"
+const opStartAndHelpAdmin = "admin.startAndHelpAdmin"
 
 func (app *Application) startAndHelpAdmin(c tele.Context) error {
 	app.Logger.Info(opStartAndHelpAdmin,
@@ -21,7 +21,7 @@ func (app *Application) startAndHelpAdmin(c tele.Context) error {
 	return c.Send(app.AdminTemplates.Render(admin.StartInfo, nil))
 }
 
-const opSubmit = "admin_views.submitSchedule"
+const opSubmit = "admin.submitSchedule"
 
 func (app *Application) submitSchedule(c tele.Context) error {
 	file := c.Message().Document
@@ -80,7 +80,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 	return c.Send(app.AdminTemplates.Render(admin.SubmitSuccess, nil))
 }
 
-const opExport = "admin_bot.exportEvaluations"
+const opExport = "admin.exportEvaluations"
 
 func (app *Application) exportEvaluations(c tele.Context) error {
 	evaluations, err := app.AdminController.ExportEvaluations()

@@ -11,8 +11,6 @@ func (app *Application) Routes() {
 
 func (app *Application) userBotRoutes() {
 	app.UserBot.Use(app.recoverPanic, app.measureTime)
-
-	app.UserBot.Handle("/start", app.helloWorld)
 }
 
 func (app *Application) adminBotRoutes() {
