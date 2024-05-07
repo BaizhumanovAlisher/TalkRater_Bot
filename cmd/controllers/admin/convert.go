@@ -11,6 +11,11 @@ import (
 )
 
 func (ac *Controller) convertAndValidateLectures(lecturesInput []*LectureInput) ([]*data.Lecture, error) {
+	err := checkUnique(lecturesInput)
+	if err != nil {
+		return nil, err
+	}
+
 	lectures := make([]*data.Lecture, len(lecturesInput))
 	// it is important get all errors from converting
 	errorsSlice := make([]error, len(lectures))
@@ -41,12 +46,25 @@ func (ac *Controller) convertAndValidateLectures(lecturesInput []*LectureInput) 
 		}
 	}
 
-	if count == 0 {
-		return lectures, nil
+	if count != 0 {
+		output := result.String()
+		return nil, errors.New(output[:len(output)-1])
 	}
 
-	output := result.String()
-	return nil, errors.New(output[:len(output)-1])
+	return lectures, nil
+}
+
+func checkUnique(lecturesInput []*LectureInput) error {
+	URLs := make([]string, len(lecturesInput))
+	for i := 0; i < len(lecturesInput); i++ {
+		URLs[i] = lecturesInput[i].URL
+	}
+
+	if !validators.Unique(URLs) {
+		return errors.New("URLs must be unique")
+	}
+
+	return nil
 }
 
 func (ac *Controller) convertAndValidateLecture(input *LectureInput) (*data.Lecture, error) {
