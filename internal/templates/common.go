@@ -11,13 +11,13 @@ type Templates struct {
 	fileTemplates map[string]*template.Template
 }
 
-func NewTemplates(path string, directoryNames string, filesName []string) (*Templates, error) {
+func NewTemplates(path string, filesName []string) (*Templates, error) {
 	templates := &Templates{
 		fileTemplates: make(map[string]*template.Template),
 	}
 
 	for _, fileName := range filesName {
-		fullPath := path + string(os.PathSeparator) + directoryNames + string(os.PathSeparator) + fileName
+		fullPath := path + string(os.PathSeparator) + fileName
 		file, err := os.ReadFile(fullPath)
 
 		if err != nil {

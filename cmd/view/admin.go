@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 	"talk_rater_bot/internal/templates"
-	"talk_rater_bot/internal/templates/admin"
 	"time"
 )
 
@@ -18,7 +17,7 @@ func (app *Application) startAndHelpAdmin(c tele.Context) error {
 	app.Logger.Info(opStartAndHelpAdmin,
 		slog.String("username", c.Sender().Username))
 
-	return c.Send(app.AdminTemplates.Render(admin.StartInfo, nil))
+	return c.Send(app.Templates.Render(templates.StartInfoAdmin, nil))
 }
 
 const opSubmit = "admin.submitSchedule"
@@ -31,7 +30,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", "file does not exist"),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: "в сообщении должен быть файл"}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "в сообщении должен быть файл"}))
 	}
 
 	if !strings.HasSuffix(file.FileName, ".csv") {
@@ -41,7 +40,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("info", "name file should end `.csv`"),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
 	}
 
 	filePath := app.generateFilePath(file.FileName)
@@ -53,7 +52,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
 	}
 
 	err = app.AdminController.GenerateSchedule(filePath)
@@ -64,7 +63,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
 	}
 
 	err = os.Remove(filePath)
@@ -77,7 +76,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 		)
 	}
 
-	return c.Send(app.AdminTemplates.Render(admin.SubmitSuccess, nil))
+	return c.Send(app.Templates.Render(templates.SubmitSuccess, nil))
 }
 
 const opExport = "admin.exportEvaluations"
@@ -91,7 +90,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
 	}
 
 	jsonData, err := json.Marshal(evaluations)
@@ -101,7 +100,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
 	}
 
 	fileName := "evaluations.json"
@@ -114,7 +113,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.AdminTemplates.Render(admin.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
 	}
 
 	fileTG := &tele.Document{File: tele.FromDisk(filePath), FileName: fileName}

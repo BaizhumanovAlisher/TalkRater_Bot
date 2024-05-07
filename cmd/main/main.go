@@ -9,8 +9,6 @@ import (
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"talk_rater_bot/internal/templates"
-	"talk_rater_bot/internal/templates/admin"
-	"talk_rater_bot/internal/templates/user"
 )
 
 const op = "main.main"
@@ -28,10 +26,7 @@ func main() {
 	adminBot, err := helpers.SetupBot(cfg.TgBotSettings.TokenAdminPanel, cfg.TgBotSettings.Timeout)
 	checkError(err, logger)
 
-	adminTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, admin.DirectoryName, admin.FilesName)
-	checkError(err, logger)
-
-	userTemplates, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, user.DirectoryName, user.FilesName)
+	templatesMap, err := templates.NewTemplates(cfg.EnvVars.TemplatePath, templates.FilesName)
 	checkError(err, logger)
 
 	adminDB := databases.NewAdminDB(cfg.TgBotSettings.Admins)
@@ -51,11 +46,11 @@ func main() {
 		UserBot:         userBot,
 		AdminBot:        adminBot,
 		AdminDB:         adminDB,
-		AdminTemplates:  adminTemplates,
-		UserTemplates:   userTemplates,
+		Templates:       templatesMap,
 		TimeParser:      cfg.TimeParser,
 		PathTmp:         cfg.EnvVars.PathTmp,
 		AdminController: adminContr,
+		Conference:      cfg.Conference,
 	}
 
 	app.Routes()

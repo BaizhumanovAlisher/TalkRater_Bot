@@ -3,7 +3,7 @@ package view
 import (
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
-	"talk_rater_bot/internal/templates/admin"
+	"talk_rater_bot/internal/templates"
 	"time"
 )
 
@@ -55,7 +55,7 @@ func (app *Application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 			app.Logger.Info(op,
 				slog.String("username", username),
 				slog.String("info", "failed authorization"))
-			return c.Send(app.AdminTemplates.Render(admin.AccessDeniedError, nil))
+			return c.Send(app.Templates.Render(templates.AccessDeniedError, nil))
 		}
 	}
 }
