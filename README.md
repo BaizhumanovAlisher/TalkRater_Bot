@@ -69,5 +69,4 @@ Simple loading config file
 `21/07/2024 10:00:00` - MSK time Zone
 
 ## TODO List
-- add backup before removing all data from DB
 - add check sql injection
