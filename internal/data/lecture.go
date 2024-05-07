@@ -7,7 +7,7 @@ import (
 )
 
 type Lecture struct {
-	ID      int64 // ID parsed from URL
+	ID      int64
 	Title   string
 	Speaker string
 	URL     string    `gorm:"unique;index"`

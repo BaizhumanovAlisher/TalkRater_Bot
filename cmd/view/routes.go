@@ -21,4 +21,5 @@ func (app *Application) adminBotRoutes() {
 	app.AdminBot.Handle("/start", app.startAndHelpAdmin)
 	app.AdminBot.Handle("/help", app.startAndHelpAdmin)
 	app.AdminBot.Handle(tele.OnDocument, app.submitSchedule)
+	app.AdminBot.Handle("/export", app.exportEvaluations)
 }

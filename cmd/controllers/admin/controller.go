@@ -59,3 +59,23 @@ func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, ac *Controller) 
 
 	return oldLectures, nil
 }
+
+func (ac *Controller) ExportEvaluations() ([]*data.ExportEvaluation, error) {
+	var exportEvaluations []*data.ExportEvaluation
+
+	result := ac.db.Table("evaluations").
+		Select("users.identity_info as user, lectures.url as url, evaluations.score_content as content, evaluations.score_performance as performance, evaluations.comment as comment").
+		Joins("left join users on users.id = evaluations.user_id").
+		Joins("left join lectures on lectures.id = evaluations.lecture_id").
+		Scan(&exportEvaluations)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if exportEvaluations == nil {
+		exportEvaluations = make([]*data.ExportEvaluation, 0)
+	}
+
+	return exportEvaluations, nil
+}

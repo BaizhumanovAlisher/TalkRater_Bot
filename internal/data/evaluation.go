@@ -48,3 +48,11 @@ func GenerateTypeEvaluation(typeName string) (TypeEvaluation, error) {
 		return "", errors.New("unknown type of evaluation")
 	}
 }
+
+type ExportEvaluation struct {
+	UserIdentityInfo string `json:"user"`
+	URLConference    string `json:"url"`
+	Content          int8   `json:"content"`
+	Performance      int8   `json:"performance"`
+	Comment          string `json:"comment,omitempty"`
+}
