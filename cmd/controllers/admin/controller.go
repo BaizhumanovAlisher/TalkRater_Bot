@@ -67,6 +67,7 @@ func (ac *Controller) ExportEvaluations() ([]*data.ExportEvaluation, error) {
 		Select("users.identity_info as user, lectures.url as url, evaluations.score_content as content, evaluations.score_performance as performance, evaluations.comment as comment").
 		Joins("left join users on users.id = evaluations.user_id").
 		Joins("left join lectures on lectures.id = evaluations.lecture_id").
+		Where("evaluations.type_evaluation = ?", string(data.Correct)).
 		Scan(&exportEvaluations)
 
 	if result.Error != nil {
