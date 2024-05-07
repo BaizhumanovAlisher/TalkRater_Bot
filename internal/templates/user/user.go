@@ -1,7 +1,7 @@
 package user
 
 const (
-	DirectoryName = "admin_bot"
+	DirectoryName = "user"
 
 	StartInfo = "start.tmpl"
 	// todo: add

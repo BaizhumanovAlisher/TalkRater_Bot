@@ -1,7 +1,7 @@
 package admin
 
 const (
-	DirectoryName = "admin_bot"
+	DirectoryName = "admin"
 
 	StartInfo         = "start.tmpl"
 	SubmitSuccess     = "submit_success.tmpl"
