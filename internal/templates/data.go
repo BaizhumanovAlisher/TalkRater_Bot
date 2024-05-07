@@ -1,14 +1,21 @@
 package templates
 
 type TemplateData struct {
-	Error    string
-	Lecture  *LectureTemplate
-	Lectures []*LectureTemplate
+	Error      string
+	Lectures   []*Lecture
+	Conference *Conference
 }
 
-type LectureTemplate struct {
+type Lecture struct {
 	Name      string
 	Speaker   string
+	URL       string
+	StartTime string
+	EndTime   string
+}
+
+type Conference struct {
+	Name      string
 	URL       string
 	StartTime string
 	EndTime   string

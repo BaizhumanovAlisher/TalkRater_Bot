@@ -1,12 +1,3 @@
 Возникла ошибка выполнения.
 
 Описание ошибки: {{ .Error }}
-{{ if .Lecture}}
-
-Доклад:
-    Name      - {{ .Lecture.Name }}
-    Speaker   - {{ .Lecture.Speaker }}
-    URL       - {{ .Lecture.URL }}
-    StartTime - {{ .Lecture.StartTime }}
-    EndTime   - {{ .Lecture.EndTime }}
-{{ end }}
