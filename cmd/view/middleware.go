@@ -15,7 +15,7 @@ func (app *Application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 			if r := recover(); r != nil {
 				app.Logger.Warn(op,
 					slog.String("username", c.Sender().Username),
-					slog.String("panic", r.(error).Error()))
+					slog.Any("panic", r))
 
 				_ = c.Send("internal server error")
 			}

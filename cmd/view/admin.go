@@ -55,7 +55,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
 	}
 
-	err = app.AdminController.GenerateSchedule(filePath)
+	err = app.Controller.GenerateSchedule(filePath)
 	if err != nil {
 		app.Logger.Error(opSubmit,
 			slog.String("username", c.Sender().Username),
@@ -82,7 +82,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 const opExport = "admin.exportEvaluations"
 
 func (app *Application) exportEvaluations(c tele.Context) error {
-	evaluations, err := app.AdminController.ExportEvaluations()
+	evaluations, err := app.Controller.ExportEvaluations()
 
 	if err != nil {
 		app.Logger.Error(opExport,

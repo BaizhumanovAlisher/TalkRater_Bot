@@ -1,3 +1,5 @@
 Расписание докладов:
-
-%s
+{{ range .Schedule }}---
+{{ .Name }}
+{{ .StartTime }}
+{{ end }}

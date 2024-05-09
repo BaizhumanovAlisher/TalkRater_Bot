@@ -2,7 +2,7 @@ package templates
 
 type TemplateData struct {
 	Error      string
-	Lectures   []*Lecture
+	Schedule   []*Lecture
 	Conference *Conference
 }
 
