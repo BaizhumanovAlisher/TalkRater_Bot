@@ -1,4 +1,4 @@
-package admin
+package controllers
 
 import (
 	"gorm.io/gorm"
@@ -18,22 +18,22 @@ func NewController(DB *gorm.DB, timeParser *helpers.TimeParser, conference *data
 	return &Controller{db: DB, timeParser: timeParser, conference: conference}
 }
 
-func (ac *Controller) GenerateSchedule(pathFile string) error {
-	lecturesInput, err := ac.parseSchedule(pathFile)
+func (c *Controller) GenerateSchedule(pathFile string) error {
+	lecturesInput, err := c.parseSchedule(pathFile)
 	if err != nil {
 		return err
 	}
 
-	newLectures, err := ac.convertAndValidateLectures(lecturesInput)
+	newLectures, err := c.convertAndValidateLectures(lecturesInput)
 	if err != nil {
 		return err
 	}
 
-	oldLectures, err := sortAndReadFromDBConcurrently(newLectures, ac)
+	oldLectures, err := sortAndReadFromDBConcurrently(newLectures, c)
 
 	mergedLectures := mergeLectures(oldLectures, newLectures)
 
-	return ac.save(mergedLectures)
+	return c.save(mergedLectures)
 }
 
 func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, ac *Controller) (oldLectures []*data.Lecture, err error) {
@@ -60,10 +60,10 @@ func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, ac *Controller) 
 	return oldLectures, nil
 }
 
-func (ac *Controller) ExportEvaluations() ([]*data.ExportEvaluation, error) {
+func (c *Controller) ExportEvaluations() ([]*data.ExportEvaluation, error) {
 	var exportEvaluations []*data.ExportEvaluation
 
-	result := ac.db.Table("evaluations").
+	result := c.db.Table("evaluations").
 		Select("users.identity_info as user, lectures.url as url, evaluations.score_content as content, evaluations.score_performance as performance, evaluations.comment as comment").
 		Joins("left join users on users.id = evaluations.user_id").
 		Joins("left join lectures on lectures.id = evaluations.lecture_id").

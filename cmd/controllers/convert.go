@@ -1,4 +1,4 @@
-package admin
+package controllers
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (ac *Controller) convertAndValidateLectures(lecturesInput []*LectureInput) ([]*data.Lecture, error) {
+func (c *Controller) convertAndValidateLectures(lecturesInput []*LectureInput) ([]*data.Lecture, error) {
 	err := checkUnique(lecturesInput)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func (ac *Controller) convertAndValidateLectures(lecturesInput []*LectureInput) 
 		wg.Add(1)
 		go func(i int, lectureInput *LectureInput) {
 			defer wg.Done()
-			lecture, err := ac.convertAndValidateLecture(lectureInput)
+			lecture, err := c.convertAndValidateLecture(lectureInput)
 			if err != nil {
 				errorsSlice[i] = err
 				return
@@ -67,8 +67,8 @@ func checkUnique(lecturesInput []*LectureInput) error {
 	return nil
 }
 
-func (ac *Controller) convertAndValidateLecture(input *LectureInput) (*data.Lecture, error) {
-	startTime, err := ac.timeParser.ParseTimeString(input.StartTime)
+func (c *Controller) convertAndValidateLecture(input *LectureInput) (*data.Lecture, error) {
+	startTime, err := c.timeParser.ParseTimeString(input.StartTime)
 	if err != nil {
 		return nil, fmt.Errorf("error in line: %+v, description: %s", input, err.Error())
 	}
@@ -88,11 +88,11 @@ func (ac *Controller) convertAndValidateLecture(input *LectureInput) (*data.Lect
 
 	v := validators.New()
 	data.ValidateLecture(v, lecture)
-	v.Check(ac.conference.StartTime.Before(lecture.Start) ||
-		ac.conference.StartTime.Equal(lecture.Start),
+	v.Check(c.conference.StartTime.Before(lecture.Start) ||
+		c.conference.StartTime.Equal(lecture.Start),
 		"conf start time", "lecture start time should be after conference start time or be equal")
-	v.Check(ac.conference.EndTime.After(lecture.End) ||
-		ac.conference.EndTime.Equal(lecture.End),
+	v.Check(c.conference.EndTime.After(lecture.End) ||
+		c.conference.EndTime.Equal(lecture.End),
 		"conf end time", "lecture end time should be after conference end time or be equal")
 
 	if !v.Valid() {

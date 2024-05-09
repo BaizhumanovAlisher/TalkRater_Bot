@@ -1,4 +1,4 @@
-package admin
+package controllers
 
 import (
 	"encoding/csv"
@@ -16,7 +16,7 @@ type LectureInput struct {
 	URL       string
 }
 
-func (ac *Controller) parseSchedule(pathFile string) ([]*LectureInput, error) {
+func (c *Controller) parseSchedule(pathFile string) ([]*LectureInput, error) {
 	csvFile, err := os.Open(pathFile)
 	if err != nil {
 		return nil, err

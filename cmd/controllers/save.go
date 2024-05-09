@@ -1,4 +1,4 @@
-package admin
+package controllers
 
 import (
 	"gorm.io/gorm"
@@ -6,10 +6,10 @@ import (
 	"time"
 )
 
-func (ac *Controller) save(lectures []*data.Lecture) error {
-	return ac.db.Transaction(func(tx *gorm.DB) error {
+func (c *Controller) save(lectures []*data.Lecture) error {
+	return c.db.Transaction(func(tx *gorm.DB) error {
 		for i := 0; i < len(lectures); i++ {
-			result := ac.db.Save(lectures[i])
+			result := c.db.Save(lectures[i])
 
 			if result.Error != nil {
 				return result.Error
@@ -20,9 +20,9 @@ func (ac *Controller) save(lectures []*data.Lecture) error {
 	})
 }
 
-func (ac *Controller) extractSortedLectures() ([]*data.Lecture, error) {
+func (c *Controller) extractSortedLectures() ([]*data.Lecture, error) {
 	var lecturesInDB []*data.Lecture
-	result := ac.db.Unscoped().Order("URL").Find(&lecturesInDB)
+	result := c.db.Unscoped().Order("URL").Find(&lecturesInDB)
 
 	if result.Error != nil {
 		return nil, result.Error

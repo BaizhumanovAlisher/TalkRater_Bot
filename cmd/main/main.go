@@ -4,7 +4,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log/slog"
-	adminController "talk_rater_bot/cmd/controllers/admin"
+	adminController "talk_rater_bot/cmd/controllers"
 	"talk_rater_bot/cmd/view"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
@@ -42,15 +42,14 @@ func main() {
 	adminContr := adminController.NewController(db, cfg.TimeParser, cfg.Conference)
 
 	app := view.Application{
-		Logger:          logger,
-		UserBot:         userBot,
-		AdminBot:        adminBot,
-		AdminDB:         adminDB,
-		Templates:       templatesMap,
-		TimeParser:      cfg.TimeParser,
-		PathTmp:         cfg.EnvVars.PathTmp,
-		AdminController: adminContr,
-		Conference:      cfg.Conference,
+		Logger:     logger,
+		UserBot:    userBot,
+		AdminBot:   adminBot,
+		AdminDB:    adminDB,
+		Templates:  templatesMap,
+		TimeParser: cfg.TimeParser,
+		PathTmp:    cfg.EnvVars.PathTmp,
+		Controller: adminContr,
 	}
 
 	app.Routes()
