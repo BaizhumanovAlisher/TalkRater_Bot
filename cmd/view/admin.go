@@ -63,7 +63,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return submitError(c, app, err)
 	}
 
 	err = os.Remove(filePath)
@@ -90,7 +90,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return submitError(c, app, err)
 	}
 
 	jsonData, err := json.Marshal(evaluations)
@@ -100,7 +100,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return submitError(c, app, err)
 	}
 
 	fileName := "evaluations.json"
@@ -113,7 +113,7 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
+		return submitError(c, app, err)
 	}
 
 	fileTG := &tele.Document{File: tele.FromDisk(filePath), FileName: fileName}
@@ -138,4 +138,11 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 
 func (app *Application) generateFilePath(fileName string) string {
 	return fmt.Sprintf("%s%s%s_%s", app.PathTmp, string(os.PathSeparator), time.Now().Format("2006-01-02_15-04-05"), fileName)
+}
+
+func submitError(c tele.Context, app *Application, err error) error {
+	if len(err.Error()) > 1000 {
+		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()[:1000] + "...\nСообщение слишком длинное"}))
+	}
+	return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
 }
