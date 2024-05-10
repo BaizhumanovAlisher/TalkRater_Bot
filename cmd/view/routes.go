@@ -20,9 +20,6 @@ func (app *Application) Routes() {
 	app.AdminBot.Handle("/help", app.helloAdmin)
 	app.AdminBot.Handle(tele.OnDocument, app.submitSchedule)
 	app.AdminBot.Handle("/export", app.exportEvaluations)
-	app.AdminBot.Handle("/conference", app.viewConference)
-	app.AdminBot.Handle("/schedule", app.viewSchedule)
-	app.AdminBot.Handle(tele.OnCallback, app.callbackRouter)
 }
 
 func (app *Application) callbackRouter(c tele.Context) error {
