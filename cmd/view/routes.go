@@ -11,9 +11,15 @@ func (app *Application) Routes() {
 	app.UserBot.Handle("/conference", app.viewConference)
 	app.UserBot.Handle("/schedule", app.viewConference)
 	app.UserBot.Handle(tele.OnCallback, func(c tele.Context) error {
-		if strings.HasPrefix(c.Callback().Data, "prev|") || strings.HasPrefix(c.Callback().Data, "next|") {
+		txt, _ := strings.CutPrefix(c.Callback().Data, "\f")
+		if strings.HasPrefix(txt, "prev|") || strings.HasPrefix(txt, "next|") {
 			return app.viewSchedule(c)
 		}
+		if strings.HasPrefix(txt, "id|") {
+			return app.viewLecture(c)
+		}
+
+		app.Logger.Warn("unimplemented method")
 		return c.Send("unimplemented method")
 	})
 
@@ -30,6 +36,11 @@ func (app *Application) Routes() {
 		if strings.HasPrefix(txt, "prev|") || strings.HasPrefix(txt, "next|") {
 			return app.viewSchedule(c)
 		}
+		if strings.HasPrefix(txt, "id|") {
+			return app.viewLecture(c)
+		}
+
+		app.Logger.Warn("unimplemented method")
 		return c.Send("unimplemented method")
 	})
 }

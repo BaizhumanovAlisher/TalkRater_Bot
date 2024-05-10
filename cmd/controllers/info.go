@@ -28,3 +28,14 @@ func (c *Controller) CountPageInLectures(pageSize int64) (int64, error) {
 
 	return (count + pageSize - 1) / pageSize, nil
 }
+
+func (c *Controller) GetLecture(id int64) (*data.Lecture, error) {
+	var lecture data.Lecture
+	result := c.db.First(&lecture, id)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &lecture, nil
+}

@@ -8,6 +8,7 @@ const (
 
 	ConferenceTmpl = "info_conference.tmpl"
 	Schedule       = "info_schedule.tmpl"
+	LectureTmpl    = "info_lecture.tmpl"
 
 	StartInfoUser = "user_start.tmpl"
 )
@@ -20,4 +21,5 @@ var FilesName = []string{
 	SubmitError,
 	AccessDeniedError,
 	StartInfoUser,
+	LectureTmpl,
 }

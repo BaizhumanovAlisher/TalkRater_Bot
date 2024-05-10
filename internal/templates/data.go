@@ -4,6 +4,7 @@ type TemplateData struct {
 	Error      string
 	Schedule   []*Lecture
 	Conference *Conference
+	Lecture    *Lecture
 }
 
 type Lecture struct {
