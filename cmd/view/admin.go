@@ -55,6 +55,18 @@ func (app *Application) submitSchedule(c tele.Context) error {
 		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
 	}
 
+	defer func() {
+		err = os.Remove(filePath)
+		if err != nil {
+			app.Logger.Error(opSubmit,
+				slog.String("username", c.Sender().Username),
+				slog.String("file path", filePath),
+				slog.String("error", err.Error()),
+				slog.String("info", "problem to delete file"),
+			)
+		}
+	}()
+
 	err = app.Controller.GenerateSchedule(filePath)
 	if err != nil {
 		app.Logger.Error(opSubmit,
@@ -64,16 +76,6 @@ func (app *Application) submitSchedule(c tele.Context) error {
 		)
 
 		return submitError(c, app, err)
-	}
-
-	err = os.Remove(filePath)
-	if err != nil {
-		app.Logger.Error(opSubmit,
-			slog.String("username", c.Sender().Username),
-			slog.String("file path", filePath),
-			slog.String("error", err.Error()),
-			slog.String("info", "problem to delete file"),
-		)
 	}
 
 	return c.Send(app.Templates.Render(templates.SubmitSuccess, nil))
@@ -116,22 +118,24 @@ func (app *Application) exportEvaluations(c tele.Context) error {
 		return submitError(c, app, err)
 	}
 
+	defer func() {
+		err = os.Remove(filePath)
+		if err != nil {
+			app.Logger.Error(opExport,
+				slog.String("username", c.Sender().Username),
+				slog.String("file path", filePath),
+				slog.String("error", err.Error()),
+				slog.String("info", "problem to delete file"),
+			)
+		}
+	}()
+
 	fileTG := &tele.Document{File: tele.FromDisk(filePath), FileName: fileName}
 	err = c.Send(fileTG)
 	app.Logger.Info(opExport,
 		slog.String("username", c.Sender().Username),
 		slog.String("info", "export file was send"),
 	)
-
-	err = os.Remove(filePath)
-	if err != nil {
-		app.Logger.Error(opExport,
-			slog.String("username", c.Sender().Username),
-			slog.String("file path", filePath),
-			slog.String("error", err.Error()),
-			slog.String("info", "problem to delete file"),
-		)
-	}
 
 	return err
 }
