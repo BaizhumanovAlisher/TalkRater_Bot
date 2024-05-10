@@ -126,12 +126,6 @@ func generatePageNumber(c *tele.Callback, maxCountPage int64) (pageNumber int) {
 const op = "info.viewLecture"
 
 func (app *Application) viewLecture(c tele.Context) error {
-	if c.Callback() == nil {
-		app.Logger.Warn(op, slog.String("error", "works only with callbacks"))
-
-		return c.Send("works only with callbacks")
-	}
-
 	numbers, _ := strings.CutPrefix(c.Callback().Data, "\fid|")
 	nums := strings.Split(numbers, "|")
 	if len(nums) != 2 {
@@ -166,7 +160,7 @@ func (app *Application) viewLecture(c tele.Context) error {
 	selector := &tele.ReplyMarkup{}
 	selector.Inline(selector.Row(
 		selector.Data("Вернуться", "next", strconv.FormatInt(pageNumber-1, 10)),
-		selector.Data("Оценить", "evaluate", strconv.FormatInt(lectureID, 10)),
+		selector.Data("Оценить", "evaluation_0", strconv.FormatInt(lectureID, 10)),
 	))
 	return c.Send(app.Templates.Render(templates.LectureTmpl,
 		&templates.TemplateData{Lecture: convertFullLecture(lecture, app.TimeParser)}), selector)

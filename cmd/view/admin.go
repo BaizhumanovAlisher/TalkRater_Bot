@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-const opStartAndHelpAdmin = "admin.startAndHelpAdmin"
+const opStartAndHelpAdmin = "admin.helloAdmin"
 
-func (app *Application) startAndHelpAdmin(c tele.Context) error {
+func (app *Application) helloAdmin(c tele.Context) error {
 	app.Logger.Info(opStartAndHelpAdmin,
 		slog.String("username", c.Sender().Username))
 
