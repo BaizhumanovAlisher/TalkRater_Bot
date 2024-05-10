@@ -7,6 +7,7 @@ type TemplateData struct {
 }
 
 type Lecture struct {
+	Number    string
 	Name      string
 	Speaker   string
 	URL       string

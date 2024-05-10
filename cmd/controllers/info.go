@@ -7,21 +7,24 @@ func (c *Controller) GetCurrentConference() *data.Conference {
 	return &tmp
 }
 
-func (c *Controller) GetSchedule() ([]*data.Lecture, error) {
-	var lecturers []*data.Lecture
-	result := c.db.Order("start").Find(&lecturers)
+func (c *Controller) GetSchedule(limit, offset int) ([]*data.Lecture, error) {
+	var lectures []*data.Lecture
+	result := c.db.Order("start").Limit(limit).Offset(offset).Find(&lectures)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	aLotOf := make([]*data.Lecture, 0, len(lecturers)*25)
+	return lectures, nil
+}
 
-	for i := 0; i < 5; i++ {
-		for _, lect := range lecturers {
-			aLotOf = append(aLotOf, lect)
-		}
+func (c *Controller) CountPageInLectures(pageSize int64) (int64, error) {
+	var count int64
+	result := c.db.Model(&data.Lecture{}).Count(&count)
+
+	if result.Error != nil {
+		return 0, result.Error
 	}
 
-	return aLotOf, nil
+	return (count + pageSize - 1) / pageSize, nil
 }
