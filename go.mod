@@ -1,6 +1,6 @@
 module talk_rater_bot
 
-go 1.21
+go 1.21.9
 
 require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0

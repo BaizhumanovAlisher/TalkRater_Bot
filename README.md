@@ -29,7 +29,7 @@ It is preferred to run in linux environment because it was not tested in windows
 
 ## Env variable for logger
 It is in `config/local.yaml`, var is `env`.
-It can be `local` and `prod`
+It can be `local` or `prod`
 
 Settings of logger are in `internal/helpers/logger.go`.
 
