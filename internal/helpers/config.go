@@ -18,7 +18,6 @@ type Config struct {
 	ConferenceConfig          ConferenceConfig `yaml:"conference" env-required:"true"`
 	EnvVars                   EnvVars          `yaml:"secret"` // no parsing in config file is required. only for env
 	DatabaseConfig            DatabaseConfig   `yaml:"database" env-required:"true"`
-	KVDatabase                KVDatabaseConfig `yaml:"kv_database" env-required:"true"`
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
@@ -36,9 +35,6 @@ func MustLoadConfig() *Config {
 
 	dbPassword := LoadOneSecret(cfg.EnvVars.DatabasePasswordPathFile)
 	cfg.DatabaseConfig.compile(dbPassword)
-
-	kvDbPassword := LoadOneSecret(cfg.EnvVars.KVDatabasePasswordPathFile)
-	cfg.KVDatabase.compile(kvDbPassword)
 
 	tokenUser := LoadOneSecret(cfg.EnvVars.TgTokenUserPathFile)
 	tokenAdminPanel := LoadOneSecret(cfg.EnvVars.TgTokenAdminPanelPathFile)
@@ -105,16 +101,6 @@ func (dc *DatabaseConfig) compile(password string) {
 		password,
 		dc.DatabaseName,
 	)
-}
-
-type KVDatabaseConfig struct {
-	Addr     string `yaml:"addr" env-required:"true"`
-	Password string `yaml:"-"` // Password will be downloaded from secrets
-	DB       int32  `yaml:"db"`
-}
-
-func (kv *KVDatabaseConfig) compile(password string) {
-	kv.Password = password
 }
 
 type TgBotSettings struct {

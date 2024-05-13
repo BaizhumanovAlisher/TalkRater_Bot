@@ -17,7 +17,6 @@ echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
 echo -n "<YOUR_REDIS_PASSWORD>" | cat > ./secrets/kv_db_password.txt
 
 export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
-export KV_DB_PASSWORD_FILE="$(pwd)/secrets/kv_db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
 export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"

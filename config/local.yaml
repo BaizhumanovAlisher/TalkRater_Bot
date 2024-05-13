@@ -17,10 +17,6 @@ database:
   user: "telegram_bot"
   database_name: "talk_rater_db"
 
-kv_database:
-  addr: "localhost:9001"
-  db: 0
-
 tg_bot_settings:
   admins:
     - cs_and_dev # this is tg username of creator this bot
