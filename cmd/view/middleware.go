@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
 	"talk_rater_bot/internal/templates"
@@ -9,13 +10,12 @@ import (
 
 func (app *Application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.recoverPanic"
+	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
 		defer func() {
 			if r := recover(); r != nil {
-				app.Logger.Warn(op,
-					slog.String("username", c.Sender().Username),
-					slog.Any("panic", r))
+				log.Warn(fmt.Sprintf("%v", r), slog.String("username", c.Sender().Username))
 
 				_ = c.Send("internal server error")
 			}
@@ -27,18 +27,17 @@ func (app *Application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 
 func (app *Application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.measureTime"
+	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
+		log := log.With(slog.String("username", c.Sender().Username))
 		timeStart := time.Now()
 
 		result := next(c)
 
 		duration := time.Now().Sub(timeStart)
 
-		app.Logger.Info(op,
-			slog.String("username", c.Sender().Username),
-			slog.Duration("duration", duration),
-		)
+		log.Info(duration.String())
 
 		return result
 	}
@@ -46,15 +45,14 @@ func (app *Application) measureTime(next tele.HandlerFunc) tele.HandlerFunc {
 
 func (app *Application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.checkAdmin"
+	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
 		username := c.Sender().Username
 		if app.AdminDB.IsAdmin(username) {
 			return next(c)
 		} else {
-			app.Logger.Info(op,
-				slog.String("username", username),
-				slog.String("info", "failed authorization"))
+			log.Info("failed authorization", slog.String("username", username))
 			return c.Send(app.Templates.Render(templates.AccessDeniedError, nil))
 		}
 	}
@@ -62,21 +60,19 @@ func (app *Application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 
 func (app *Application) checkUser(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.checkUser"
+	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
+		log := log.With(slog.String("username", c.Sender().Username))
 		exists, err := app.Controller.UserExists(c.Sender().ID)
+
 		if err != nil {
-			app.Logger.Error(op,
-				slog.String("username", c.Sender().Username),
-				slog.String("error", err.Error()))
+			log.Error(err.Error())
 			return c.Send("проблема с авторизацией")
 		}
 
 		if !exists {
-			app.Logger.Info(op,
-				slog.String("username", c.Sender().Username),
-				slog.String("info", "failed authorization"))
-
+			log.Info("failed authorization")
 			return c.Send(app.Templates.Render(templates.UserAuthorization, nil))
 		}
 

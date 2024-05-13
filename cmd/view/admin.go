@@ -11,133 +11,95 @@ import (
 	"time"
 )
 
-const opStartAndHelpAdmin = "admin.helloAdmin"
+func (app *Application) helloAdmin() tele.HandlerFunc {
+	op := "admin.helloAdmin"
+	log := app.Logger.With("op", op)
 
-func (app *Application) helloAdmin(c tele.Context) error {
-	app.Logger.Info(opStartAndHelpAdmin,
-		slog.String("username", c.Sender().Username))
-
-	return c.Send(app.Templates.Render(templates.StartInfoAdmin, nil))
+	return func(c tele.Context) error {
+		log.Info("", slog.String("username", c.Sender().Username))
+		return c.Send(app.Templates.Render(templates.StartInfoAdmin, nil))
+	}
 }
 
-const opSubmit = "admin.submitSchedule"
+func (app *Application) submitSchedule() tele.HandlerFunc {
+	const opSubmit = "admin.submitSchedule"
+	log := app.Logger.With(slog.String("op", opSubmit))
 
-func (app *Application) submitSchedule(c tele.Context) error {
-	file := c.Message().Document
-	if file == nil {
-		app.Logger.Error(opSubmit,
-			slog.String("username", c.Sender().Username),
-			slog.String("error", "file does not exist"),
-		)
+	return func(c tele.Context) error {
+		log := log.With(slog.String("username", c.Sender().Username))
 
-		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "в сообщении должен быть файл"}))
-	}
+		file := c.Message().Document
 
-	if !strings.HasSuffix(file.FileName, ".csv") {
-		app.Logger.Info(opSubmit,
-			slog.String("username", c.Sender().Username),
-			slog.String("file name", file.FileName),
-			slog.String("info", "name file should end `.csv`"),
-		)
-
-		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
-	}
-
-	filePath := app.generateFilePath(file.FileName)
-	err := app.AdminBot.Download(file.MediaFile(), filePath)
-	if err != nil {
-		app.Logger.Error(opSubmit,
-			slog.String("username", c.Sender().Username),
-			slog.String("file path", filePath),
-			slog.String("error", err.Error()),
-		)
-
-		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "не смог сохранить файл"}))
-	}
-
-	defer func() {
-		err = os.Remove(filePath)
-		if err != nil {
-			app.Logger.Error(opSubmit,
-				slog.String("username", c.Sender().Username),
-				slog.String("file path", filePath),
-				slog.String("error", err.Error()),
-				slog.String("info", "problem to delete file"),
-			)
+		if !strings.HasSuffix(file.FileName, ".csv") {
+			log.Info("name file should end `.csv`")
+			return c.Send(app.Templates.Render(templates.Error,
+				&templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
 		}
-	}()
 
-	err = app.Controller.GenerateSchedule(filePath)
-	if err != nil {
-		app.Logger.Error(opSubmit,
-			slog.String("username", c.Sender().Username),
-			slog.String("file path", filePath),
-			slog.String("error", err.Error()),
-		)
+		filePath := app.generateFilePath(file.FileName)
+		err := app.AdminBot.Download(file.MediaFile(), filePath)
+		if err != nil {
+			log.Error(err.Error())
+			return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "не смог сохранить файл"}))
+		}
 
-		return submitError(c, app, err)
+		defer func() {
+			err = os.Remove(filePath)
+			if err != nil {
+				log.Warn(err.Error(), slog.String("file path", filePath))
+			}
+		}()
+
+		err = app.Controller.GenerateSchedule(filePath)
+		if err != nil {
+			log.Error(err.Error())
+			return submitError(c, app, err)
+		}
+
+		return c.Send(app.Templates.Render(templates.SubmitSuccess, nil))
 	}
 
-	return c.Send(app.Templates.Render(templates.SubmitSuccess, nil))
 }
 
-const opExport = "admin.exportEvaluations"
+func (app *Application) exportEvaluations() tele.HandlerFunc {
+	const op = "admin.exportEvaluations"
+	log := app.Logger.With(slog.String("op", op))
 
-func (app *Application) exportEvaluations(c tele.Context) error {
-	evaluations, err := app.Controller.ExportEvaluations()
+	return func(c tele.Context) error {
+		log := log.With(slog.String("username", c.Sender().Username))
+		evaluations, err := app.Controller.ExportEvaluations()
 
-	if err != nil {
-		app.Logger.Error(opExport,
-			slog.String("username", c.Sender().Username),
-			slog.String("error", err.Error()),
-		)
-
-		return submitError(c, app, err)
-	}
-
-	jsonData, err := json.Marshal(evaluations)
-	if err != nil {
-		app.Logger.Error(opExport,
-			slog.String("username", c.Sender().Username),
-			slog.String("error", err.Error()),
-		)
-
-		return submitError(c, app, err)
-	}
-
-	fileName := "evaluations.json"
-	filePath := app.generateFilePath(fileName)
-
-	err = os.WriteFile(filePath, jsonData, 0666)
-	if err != nil {
-		app.Logger.Error(opExport,
-			slog.String("username", c.Sender().Username),
-			slog.String("error", err.Error()),
-		)
-
-		return submitError(c, app, err)
-	}
-
-	defer func() {
-		err = os.Remove(filePath)
 		if err != nil {
-			app.Logger.Error(opExport,
-				slog.String("username", c.Sender().Username),
-				slog.String("file path", filePath),
-				slog.String("error", err.Error()),
-				slog.String("info", "problem to delete file"),
-			)
+			log.Error(err.Error())
+			return submitError(c, app, err)
 		}
-	}()
 
-	fileTG := &tele.Document{File: tele.FromDisk(filePath), FileName: fileName}
-	err = c.Send(fileTG)
-	app.Logger.Info(opExport,
-		slog.String("username", c.Sender().Username),
-		slog.String("info", "export file was send"),
-	)
+		jsonData, err := json.Marshal(evaluations)
+		if err != nil {
+			log.Error(err.Error())
+			return submitError(c, app, err)
+		}
 
-	return err
+		fileName := "evaluations.json"
+		filePath := app.generateFilePath(fileName)
+
+		err = os.WriteFile(filePath, jsonData, 0666)
+		if err != nil {
+			log.Error(err.Error())
+			return submitError(c, app, err)
+		}
+
+		defer func() {
+			err = os.Remove(filePath)
+			if err != nil {
+				log.Warn(err.Error(), slog.String("file path", filePath))
+			}
+		}()
+
+		fileTG := &tele.Document{File: tele.FromDisk(filePath), FileName: fileName}
+		log.Info("export file was send")
+		return c.Send(fileTG)
+	}
 }
 
 func (app *Application) generateFilePath(fileName string) string {
