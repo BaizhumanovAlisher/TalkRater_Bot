@@ -40,7 +40,7 @@ func (app *Application) viewSchedule(c tele.Context) error {
 	lectures, err := app.Controller.GetSchedule(limit, (pageNumber-1)*limit)
 	if err != nil {
 		app.Logger.Warn(opViewLectures, slog.String("error", err.Error()))
-		return c.Send(app.Templates.Render(templates.SubmitError,
+		return c.Send(app.Templates.Render(templates.Error,
 			&templates.TemplateData{Error: err.Error()}))
 	}
 
@@ -64,13 +64,21 @@ func (app *Application) generateResponse(lectures []*data.Lecture, pageNumber in
 			strconv.FormatInt(lecture.ID, 10), strconv.FormatInt(int64(pageNumber), 10))
 	}
 
-	mid := len(buttons) / 2
+	if len(buttons) > 1 {
 
-	selector.Inline(
-		selector.Row(buttons[:mid]...),
-		selector.Row(buttons[mid:]...),
-		selector.Row(btnPrev, btnNext),
-	)
+		mid := len(buttons) / 2
+
+		selector.Inline(
+			selector.Row(buttons[:mid]...),
+			selector.Row(buttons[mid:]...),
+			selector.Row(btnPrev, btnNext),
+		)
+	} else {
+		selector.Inline(
+			selector.Row(buttons...),
+			selector.Row(btnPrev, btnNext),
+		)
+	}
 
 	return app.Templates.Render(templates.Schedule, &templates.TemplateData{Schedule: schedule}), selector
 }
@@ -152,7 +160,7 @@ func (app *Application) viewLecture(c tele.Context) error {
 	if err != nil {
 		app.Logger.Error(op, slog.String("error", err.Error()))
 
-		return c.Send(app.Templates.Render(templates.SubmitError,
+		return c.Send(app.Templates.Render(templates.Error,
 			&templates.TemplateData{Error: "проблемы с базой данных"}))
 	}
 
@@ -160,8 +168,9 @@ func (app *Application) viewLecture(c tele.Context) error {
 	selector := &tele.ReplyMarkup{}
 	selector.Inline(selector.Row(
 		selector.Data("Вернуться", "next", strconv.FormatInt(pageNumber-1, 10)),
-		selector.Data("Оценить", "evaluation_0", strconv.FormatInt(lectureID, 10)),
+		selector.Data("Оценить", evaluationZeroPrefix, strconv.FormatInt(lectureID, 10)),
 	))
+
 	return c.Send(app.Templates.Render(templates.LectureTmpl,
 		&templates.TemplateData{Lecture: convertFullLecture(lecture, app.TimeParser)}), selector)
 }
