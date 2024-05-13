@@ -59,3 +59,27 @@ func (app *Application) checkAdmin(next tele.HandlerFunc) tele.HandlerFunc {
 		}
 	}
 }
+
+func (app *Application) checkUser(next tele.HandlerFunc) tele.HandlerFunc {
+	const op = "middleware.checkUser"
+
+	return func(c tele.Context) error {
+		exists, err := app.Controller.UserExists(c.Sender().ID)
+		if err != nil {
+			app.Logger.Error(op,
+				slog.String("username", c.Sender().Username),
+				slog.String("error", err.Error()))
+			return c.Send("проблема с авторизацией")
+		}
+
+		if !exists {
+			app.Logger.Info(op,
+				slog.String("username", c.Sender().Username),
+				slog.String("info", "failed authorization"))
+
+			return c.Send(app.Templates.Render(templates.UserAuthorization, nil))
+		}
+
+		return next(c)
+	}
+}
