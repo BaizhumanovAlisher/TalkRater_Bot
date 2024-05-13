@@ -67,6 +67,3 @@ Simple loading config file
 
 ## Default time pattern from csv schedule
 `21/07/2024 10:00:00` - MSK time Zone
-
-## TODO List
-- add check sql injection
