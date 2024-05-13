@@ -11,8 +11,9 @@ func (app *Application) Routes() {
 	app.UserBot.Handle("/start", app.helloUser)
 	app.UserBot.Handle("/help", app.helloUser)
 	app.UserBot.Handle("/conference", app.viewConference)
-	app.UserBot.Handle("/schedule", app.viewConference)
-	app.UserBot.Handle(tele.OnCallback, app.callbackRouter)
+	app.UserBot.Handle("/my_info", app.userInfo)
+	app.UserBot.Handle("/schedule", app.viewSchedule, app.checkUser)
+	app.UserBot.Handle(tele.OnCallback, app.callbackRouter, app.checkUser)
 
 	app.AdminBot.Use(app.recoverPanic, app.measureTime, app.checkAdmin)
 
@@ -35,6 +36,9 @@ func (app *Application) callbackRouter(c tele.Context) error {
 	}
 	if strings.HasPrefix(txt, evaluationFirstPrefix) {
 		return app.evaluationFirst(c)
+	}
+	if strings.HasPrefix(txt, evaluationSecondPrefix) {
+		return app.evaluationSecond(c)
 	}
 
 	app.Logger.Warn("unimplemented method")
