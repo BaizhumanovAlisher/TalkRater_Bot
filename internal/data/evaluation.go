@@ -19,8 +19,8 @@ type Evaluation struct {
 
 func ValidateEvaluation(v *validators.Validator, eval *Evaluation) {
 	// service should return errors in Russian for users, but for admins service can return in English
-	v.Check(eval.User.ID > 0, "user's id", "user's id должен быть больше нуля")
-	v.Check(eval.Lecture.ID > 0, "lecture's id", "lecture's id должен быть больше нуля")
+	v.Check(eval.UserID > 0, "user's id", "user's id должен быть больше нуля")
+	v.Check(eval.LectureID > 0, "lecture's id", "lecture's id должен быть больше нуля")
 
 	if eval.TypeEvaluation == Correct {
 		v.Check(eval.ScoreContent >= 1 && eval.ScoreContent <= 5, "score content", "оценка содержания должна быть между 1 и 5")
