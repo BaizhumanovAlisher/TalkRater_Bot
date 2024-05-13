@@ -30,7 +30,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", "file does not exist"),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "в сообщении должен быть файл"}))
+		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "в сообщении должен быть файл"}))
 	}
 
 	if !strings.HasSuffix(file.FileName, ".csv") {
@@ -40,7 +40,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("info", "name file should end `.csv`"),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
+		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
 	}
 
 	filePath := app.generateFilePath(file.FileName)
@@ -52,7 +52,7 @@ func (app *Application) submitSchedule(c tele.Context) error {
 			slog.String("error", err.Error()),
 		)
 
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: "не смог сохранить файл"}))
+		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "не смог сохранить файл"}))
 	}
 
 	defer func() {
@@ -146,7 +146,7 @@ func (app *Application) generateFilePath(fileName string) string {
 
 func submitError(c tele.Context, app *Application, err error) error {
 	if len(err.Error()) > 1000 {
-		return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()[:1000] + "...\nСообщение слишком длинное"}))
+		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: err.Error()[:1000] + "...\nСообщение слишком длинное"}))
 	}
-	return c.Send(app.Templates.Render(templates.SubmitError, &templates.TemplateData{Error: err.Error()}))
+	return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: err.Error()}))
 }
