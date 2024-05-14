@@ -17,7 +17,7 @@ const (
 )
 
 func (app *Application) evaluationZero() tele.HandlerFunc {
-	op := "evaluation.evaluationZero"
+	const op = "evaluation.evaluationZero"
 	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
@@ -136,5 +136,11 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 }
 
 func (app *Application) submitComment() tele.HandlerFunc {
-	panic("not implemented")
+	const op = "evaluation.submitComment"
+	log := app.Logger.With(slog.String("op", op))
+
+	return func(c tele.Context) error {
+		log.Info("hello")
+		return nil
+	}
 }

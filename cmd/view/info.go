@@ -11,7 +11,7 @@ import (
 )
 
 func (app *Application) viewConference() tele.HandlerFunc {
-	op := "info.viewConference"
+	const op = "info.viewConference"
 	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
@@ -35,7 +35,7 @@ func convertConf(conf *data.Conference, parser *helpers.TimeParser) *templates.C
 const limit = 10
 
 func (app *Application) viewSchedule() tele.HandlerFunc {
-	op := "info.viewSchedule"
+	const op = "info.viewSchedule"
 	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
@@ -139,7 +139,7 @@ func generatePageNumber(c *tele.Callback, maxCountPage int64) (pageNumber int) {
 }
 
 func (app *Application) viewLecture() tele.HandlerFunc {
-	op := "info.viewLecture"
+	const op = "info.viewLecture"
 	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {

@@ -12,7 +12,7 @@ import (
 )
 
 func (app *Application) helloAdmin() tele.HandlerFunc {
-	op := "admin.helloAdmin"
+	const op = "admin.helloAdmin"
 	log := app.Logger.With("op", op)
 
 	return func(c tele.Context) error {
