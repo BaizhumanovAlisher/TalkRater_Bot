@@ -120,9 +120,10 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		app.Logger.Info("created evaluation")
 
 		session := &data.Session{
-			ChatID: c.Chat().ID,
-			UserID: c.Sender().ID,
-			Form:   data.CommentForm,
+			ChatID:       c.Chat().ID,
+			UserID:       c.Sender().ID,
+			Form:         data.CommentForm,
+			EvaluationID: evaluation.ID,
 		}
 
 		err = app.Controller.SaveSession(session)
@@ -140,7 +141,27 @@ func (app *Application) submitComment() tele.HandlerFunc {
 	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
-		log.Info("hello")
-		return nil
+		log := log.With(slog.String("username", c.Sender().Username))
+
+		txt := c.Message().Text
+
+		if len([]rune(txt)) < 4 {
+			log.Info("short comment", "comment", txt)
+			return c.Send("комментарий был проигнорирован, так как длина меньше 4 символов.")
+		}
+
+		session, ok := c.Get(data.SessionKey).(*data.Session)
+		if !ok || session == nil {
+			log.Error("session type error")
+			return app.sendError(c, "проблема с сессиями")
+		}
+
+		err := app.Controller.SaveComment(session.EvaluationID, txt)
+		if err != nil {
+			log.Error(err.Error())
+			return app.sendError(c, "ошибка при сохранении комментария")
+		}
+
+		return c.Send(app.Templates.Render(templates.CommentSuccess, nil))
 	}
 }

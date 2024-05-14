@@ -21,3 +21,7 @@ func (c *Controller) SaveEvaluation(eval *data.Evaluation) error {
 	eval.ID = evaluation.ID
 	return c.db.Save(eval).Error
 }
+
+func (c *Controller) SaveComment(id int64, comment string) error {
+	return c.db.Model(&data.Evaluation{}).Where("ID = ?", id).Update("Comment", comment).Error
+}

@@ -64,6 +64,7 @@ func (app *Application) textRouter(c tele.Context) error {
 	case data.UserIdenticalInfoForm:
 		return app.identicalInfoForm()(c)
 	case data.CommentForm:
+		c.Set(data.SessionKey, session)
 		return app.submitComment()(c)
 	default:
 		log.Warn("form not exist", slog.String("form", session.Form))
