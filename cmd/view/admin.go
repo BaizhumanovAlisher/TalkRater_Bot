@@ -22,8 +22,8 @@ func (app *Application) helloAdmin() tele.HandlerFunc {
 }
 
 func (app *Application) submitSchedule() tele.HandlerFunc {
-	const opSubmit = "admin.submitSchedule"
-	log := app.Logger.With(slog.String("op", opSubmit))
+	const op = "admin.submitSchedule"
+	log := app.Logger.With(slog.String("op", op))
 
 	return func(c tele.Context) error {
 		log := log.With(slog.String("username", c.Sender().Username))
@@ -32,15 +32,15 @@ func (app *Application) submitSchedule() tele.HandlerFunc {
 
 		if !strings.HasSuffix(file.FileName, ".csv") {
 			log.Info("name file should end `.csv`")
-			return c.Send(app.Templates.Render(templates.Error,
-				&templates.TemplateData{Error: "имя файла должно заканчивать на `.csv`"}))
+			return app.sendError(c, "имя файла должно заканчивать на `.csv`")
 		}
 
 		filePath := app.generateFilePath(file.FileName)
 		err := app.AdminBot.Download(file.MediaFile(), filePath)
 		if err != nil {
 			log.Error(err.Error())
-			return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "не смог сохранить файл"}))
+			return app.sendError(c, "не смог сохранить файл")
+
 		}
 
 		defer func() {
@@ -53,7 +53,7 @@ func (app *Application) submitSchedule() tele.HandlerFunc {
 		err = app.Controller.GenerateSchedule(filePath)
 		if err != nil {
 			log.Error(err.Error())
-			return submitError(c, app, err)
+			return app.sendError(c, err)
 		}
 
 		return c.Send(app.Templates.Render(templates.SubmitSuccess, nil))
@@ -71,13 +71,13 @@ func (app *Application) exportEvaluations() tele.HandlerFunc {
 
 		if err != nil {
 			log.Error(err.Error())
-			return submitError(c, app, err)
+			return app.sendError(c, err)
 		}
 
 		jsonData, err := json.Marshal(evaluations)
 		if err != nil {
 			log.Error(err.Error())
-			return submitError(c, app, err)
+			return app.sendError(c, err)
 		}
 
 		fileName := "evaluations.json"
@@ -86,7 +86,7 @@ func (app *Application) exportEvaluations() tele.HandlerFunc {
 		err = os.WriteFile(filePath, jsonData, 0666)
 		if err != nil {
 			log.Error(err.Error())
-			return submitError(c, app, err)
+			return app.sendError(c, err)
 		}
 
 		defer func() {
@@ -104,11 +104,4 @@ func (app *Application) exportEvaluations() tele.HandlerFunc {
 
 func (app *Application) generateFilePath(fileName string) string {
 	return fmt.Sprintf("%s%s%s_%s", app.PathTmp, string(os.PathSeparator), time.Now().Format("2006-01-02_15-04-05"), fileName)
-}
-
-func submitError(c tele.Context, app *Application, err error) error {
-	if len(err.Error()) > 1000 {
-		return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: err.Error()[:1000] + "...\nСообщение слишком длинное"}))
-	}
-	return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: err.Error()}))
 }

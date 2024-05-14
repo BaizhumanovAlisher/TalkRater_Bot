@@ -46,8 +46,7 @@ func (app *Application) viewSchedule() tele.HandlerFunc {
 		lectures, err := app.Controller.GetSchedule(limit, (pageNumber-1)*limit)
 		if err != nil {
 			log.Warn(err.Error())
-
-			return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: err.Error()}))
+			return app.sendError(c, err)
 		}
 
 		log.Info("")
