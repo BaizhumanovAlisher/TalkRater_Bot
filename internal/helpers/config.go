@@ -63,12 +63,11 @@ type ConferenceConfig struct {
 }
 
 type EnvVars struct {
-	DatabasePasswordPathFile   string `env:"DB_PASSWORD_FILE" env-required:"true"`
-	KVDatabasePasswordPathFile string `env:"KV_DB_PASSWORD_FILE" env-required:"true"`
-	TgTokenUserPathFile        string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
-	TgTokenAdminPanelPathFile  string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
-	PathTmp                    string `env:"PATH_TMP"`
-	TemplatePath               string `env:"TEMPLATE_PATH" env-required:"true"`
+	DatabasePasswordPathFile  string `env:"DB_PASSWORD_FILE" env-required:"true"`
+	TgTokenUserPathFile       string `env:"TG_API_TOKEN_USER_FILE" env-required:"true"`
+	TgTokenAdminPanelPathFile string `env:"TG_API_TOKEN_ADMIN_FILE" env-required:"true"`
+	PathTmp                   string `env:"PATH_TMP"`
+	TemplatePath              string `env:"TEMPLATE_PATH" env-required:"true"`
 }
 
 func LoadOneSecret(pathToFile string) string {
