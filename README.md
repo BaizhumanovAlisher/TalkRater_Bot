@@ -34,7 +34,7 @@ Settings of logger are in `internal/helpers/logger.go`.
 
 ## Run project
 ```shell
-docker-compose up
+docker compose up
 ```
 
 ## External libraries

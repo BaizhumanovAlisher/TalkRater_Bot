@@ -24,7 +24,6 @@ services:
       dockerfile: Dockerfile
     environment:
       DB_PASSWORD_FILE: /run/secrets/db_password.txt
-      KV_DB_PASSWORD_FILE: /run/secrets/kv_db_password.txt
       TG_API_TOKEN_USER_FILE: /run/secrets/tg_api_token_user.txt
       TG_API_TOKEN_ADMIN_FILE: /run/secrets/tg_api_token_admin.txt
       CONFIG_PATH_TG_BOT: /run/configs/local.yaml
