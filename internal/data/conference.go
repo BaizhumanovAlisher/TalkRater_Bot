@@ -18,8 +18,6 @@ func ValidateConference(v *validators.Validator, conf *Conference) {
 	v.Check(conf.URL != "", "url", "URL is required")
 
 	v.Check(!conf.StartTime.IsZero(), "start", "Start time is required")
-	v.Check(!conf.EndTime.IsZero(), "end", "End time is required")
-	v.Check(!conf.EndEvaluationTime.IsZero(), "end evaluation", "End evaluation time is required")
 
 	v.Check(conf.StartTime.Before(conf.EndTime), "start and end time", "Start time must be before End time")
 	v.Check(conf.EndTime.Before(conf.EndEvaluationTime), "end and end evaluation time", "End time must be before End evaluation time")

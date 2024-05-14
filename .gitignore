@@ -25,3 +25,5 @@ go.work
 
 /secrets
 /tmp_files
+coverage.html
+coverage.out

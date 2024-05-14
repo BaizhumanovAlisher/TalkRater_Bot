@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"talk_rater_bot/internal/validators"
 )
 
@@ -11,7 +10,7 @@ type Evaluation struct {
 	LectureID        int64 `gorm:"uniqueIndex:user_lecture_idx"`
 	User             *User
 	Lecture          *Lecture
-	TypeEvaluation   TypeEvaluation
+	TypeEvaluation   string
 	ScoreContent     int8
 	ScorePerformance int8
 	Comment          string
@@ -28,26 +27,11 @@ func ValidateEvaluation(v *validators.Validator, eval *Evaluation) {
 	}
 }
 
-type TypeEvaluation string
-
 const (
-	NotWatched   TypeEvaluation = "not watched"
-	NoEvaluation TypeEvaluation = "no evaluation"
-	Correct      TypeEvaluation = "correct"
+	NotWatched   string = "not watched"
+	NoEvaluation string = "no evaluation"
+	Correct      string = "correct"
 )
-
-func GenerateTypeEvaluation(typeName string) (TypeEvaluation, error) {
-	switch typeName {
-	case string(NotWatched):
-		return NotWatched, nil
-	case string(NoEvaluation):
-		return NoEvaluation, nil
-	case string(Correct):
-		return Correct, nil
-	default:
-		return "", errors.New("unknown type of evaluation")
-	}
-}
 
 type ExportEvaluation struct {
 	UserIdentityInfo string `json:"user"`

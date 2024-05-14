@@ -37,6 +37,12 @@ Settings of logger are in `internal/helpers/logger.go`.
 docker compose up
 ```
 
+## Test coverage
+```shell
+go test ./... -coverprofile coverage.out
+go tool cover -html=coverage.out -o coverage.html
+```
+
 ## External libraries
 
 ### About using GORM
