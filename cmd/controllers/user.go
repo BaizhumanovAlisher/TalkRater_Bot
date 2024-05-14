@@ -20,3 +20,7 @@ func (c *Controller) UserExists(id int64) (bool, error) {
 
 	return count > 0, nil
 }
+
+func (c *Controller) SaveUser(user *data.User) error {
+	return c.db.Save(user).Error
+}

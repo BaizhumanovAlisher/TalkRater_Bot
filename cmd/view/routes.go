@@ -4,6 +4,7 @@ import (
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
 	"strings"
+	"talk_rater_bot/internal/data"
 )
 
 func (app *Application) Routes() {
@@ -12,9 +13,10 @@ func (app *Application) Routes() {
 	app.UserBot.Handle("/start", app.helloUser())
 	app.UserBot.Handle("/help", app.helloUser())
 	app.UserBot.Handle("/conference", app.viewConference())
-	app.UserBot.Handle("/my_info", app.identicalInfo)
+	app.UserBot.Handle("/my_info", app.identicalInfo())
 	app.UserBot.Handle("/schedule", app.viewSchedule(), app.checkUser)
 	app.UserBot.Handle(tele.OnCallback, app.callbackRouter, app.checkUser)
+	app.UserBot.Handle(tele.OnText, app.textRouter)
 
 	app.AdminBot.Use(app.recoverPanic, app.measureTime, app.checkAdmin)
 
@@ -44,4 +46,27 @@ func (app *Application) callbackRouter(c tele.Context) error {
 
 	app.Logger.Warn("unimplemented method", slog.String("username", c.Sender().Username))
 	return c.Send("unimplemented method")
+}
+
+func (app *Application) textRouter(c tele.Context) error {
+	log := app.Logger.With(slog.String("username", c.Sender().Username), slog.String("op", "routes.textRouter"))
+	session, ok, err := app.Controller.RetrieveSession(c.Chat().ID)
+	if err != nil {
+		log.Error(err.Error())
+		return c.Send("проблема с загрузкой формы")
+	}
+
+	if !ok {
+		return nil
+	}
+
+	switch session.Form {
+	case data.UserIdenticalInfoForm:
+		return app.identicalInfoForm()(c)
+	case data.CommentForm:
+		return app.submitComment()(c)
+	default:
+		log.Warn("form not exist", slog.String("form", session.Form))
+		return app.sendError(c, "такой формы не существует")
+	}
 }
