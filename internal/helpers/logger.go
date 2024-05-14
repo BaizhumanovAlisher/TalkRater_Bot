@@ -31,7 +31,7 @@ func SetupLogger(env string, pathLogs string) *slog.Logger {
 	}
 }
 
-const opLoggerDb = "logger.db"
+const op = "logger.db"
 
 type SlogLoggerDB struct {
 	logger *slog.Logger
@@ -46,22 +46,22 @@ func (s *SlogLoggerDB) LogMode(_ logger.LogLevel) logger.Interface {
 }
 
 func (s *SlogLoggerDB) Info(ctx context.Context, info string, args ...interface{}) {
-	s.logger.InfoContext(ctx, opLoggerDb,
-		slog.String("info", info),
+	s.logger.InfoContext(ctx, info,
+		slog.String("op", op),
 		slog.Any("args", args),
 	)
 }
 
 func (s *SlogLoggerDB) Warn(ctx context.Context, info string, args ...interface{}) {
-	s.logger.WarnContext(ctx, opLoggerDb,
-		slog.String("info", info),
+	s.logger.WarnContext(ctx, info,
+		slog.String("op", op),
 		slog.Any("args", args),
 	)
 }
 
 func (s *SlogLoggerDB) Error(ctx context.Context, info string, args ...interface{}) {
-	s.logger.ErrorContext(ctx, opLoggerDb,
-		slog.String("info", info),
+	s.logger.ErrorContext(ctx, info,
+		slog.String("op", op),
 		slog.Any("args", args),
 	)
 }
@@ -71,14 +71,15 @@ func (s *SlogLoggerDB) Trace(ctx context.Context, begin time.Time, fc func() (sq
 	sql, rows := fc()
 
 	if err != nil {
-		s.logger.ErrorContext(ctx, opLoggerDb,
-			slog.String("error", err.Error()),
+		s.logger.ErrorContext(ctx, err.Error(),
+			slog.String("op", op),
 			slog.String("sql", sql),
 			slog.Int64("rows", rows),
 			slog.Duration("duration", duration),
 		)
 	} else {
-		s.logger.InfoContext(ctx, opLoggerDb,
+		s.logger.InfoContext(ctx, "no error",
+			slog.String("op", op),
 			slog.String("sql", sql),
 			slog.Int64("rows", rows),
 			slog.Duration("duration", duration),
