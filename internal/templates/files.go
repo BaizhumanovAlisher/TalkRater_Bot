@@ -18,6 +18,7 @@ const (
 
 	CommentSuccess = "user_evaluation_comment_success.tmpl"
 	CommentCancel  = "user_evaluation_comment_cancel.tmpl"
+	UserAuthForm   = "user_auth_form.tmpl"
 )
 
 var FilesName = []string{
@@ -35,4 +36,5 @@ var FilesName = []string{
 	CommentSuccess,
 	CommentCancel,
 	UserAuthorization,
+	UserAuthForm,
 }

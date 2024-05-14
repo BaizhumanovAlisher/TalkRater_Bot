@@ -20,12 +20,21 @@ type PrepareDBHelper struct {
 	pathToBackup              string
 }
 
-func NewPrepareDBHelper(db *gorm.DB, currConference *data.Conference, clearDbForNewConference bool, backupOptions *helpers.DatabaseConfig, pathToBackup string) *PrepareDBHelper {
-	return &PrepareDBHelper{db: db, currConference: currConference, cleanupDBForNewConference: clearDbForNewConference, backupOptions: backupOptions, pathToBackup: pathToBackup}
+func NewPrepareDBHelper(db *gorm.DB, currConference *data.Conference,
+	clearDbForNewConference bool, backupOptions *helpers.DatabaseConfig,
+	pathToBackup string) *PrepareDBHelper {
+
+	return &PrepareDBHelper{
+		db:                        db,
+		currConference:            currConference,
+		cleanupDBForNewConference: clearDbForNewConference,
+		backupOptions:             backupOptions,
+		pathToBackup:              pathToBackup,
+	}
 }
 
 func (ph *PrepareDBHelper) PrepareDB() error {
-	err := ph.db.AutoMigrate(&data.Conference{}, &data.User{}, &data.Lecture{}, &data.Evaluation{})
+	err := ph.db.AutoMigrate(&data.Conference{}, &data.User{}, &data.Lecture{}, &data.Evaluation{}, &data.Session{})
 	if err != nil {
 		return err
 	}
@@ -68,7 +77,8 @@ func (ph *PrepareDBHelper) updateConference() error {
 }
 
 func (ph *PrepareDBHelper) backupDatabase() error {
-	backupFile := fmt.Sprintf("%s%sbackup_%s.sql", ph.pathToBackup, string(os.PathSeparator), time.Now().Format("2006-01-02_15-04-05"))
+	backupFile := fmt.Sprintf("%s%sbackup_%s.sql", ph.pathToBackup, string(os.PathSeparator),
+		time.Now().Format("2006-01-02_15-04-05"))
 
 	cmd := exec.Command("pg_dump",
 		"-h", ph.backupOptions.Host,
@@ -110,6 +120,11 @@ func (ph *PrepareDBHelper) cleanupDatabase() error {
 	}
 
 	result = ph.db.Unscoped().Where("1 = 1").Delete(&data.Conference{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	result = ph.db.Unscoped().Where("1 = 1").Delete(&data.Session{})
 	if result.Error != nil {
 		return result.Error
 	}
