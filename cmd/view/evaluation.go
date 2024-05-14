@@ -1,7 +1,6 @@
 package view
 
 import (
-	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
 	"strconv"
@@ -75,9 +74,7 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		args := strings.Split(dataInput, "|")
 		if len(args) != 3 {
 			log.Warn("must be 3 arg")
-
-			return c.Send(app.Templates.Render(templates.Error,
-				&templates.TemplateData{Error: "количество аргументов в callback должно быть 3"}))
+			return app.sendError(c, "количество аргументов в callback должно быть 3")
 		}
 
 		lectureID, err := strconv.ParseInt(args[0], 10, 64)
@@ -91,17 +88,13 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		content, err := strconv.Atoi(args[1])
 		if err != nil {
 			log.Error(err.Error())
-
-			return c.Send(app.Templates.Render(templates.Error,
-				&templates.TemplateData{Error: "проблемы с конвертацией string в int"}))
+			return app.sendError(c, "проблемы с конвертацией string в int")
 		}
 
 		performance, err := strconv.Atoi(args[2])
 		if err != nil {
 			log.Error(err.Error())
-
-			return c.Send(app.Templates.Render(templates.Error,
-				&templates.TemplateData{Error: "проблемы с конвертацией string в int"}))
+			return app.sendError(c, "проблемы с конвертацией string в int")
 		}
 
 		evaluation := &data.Evaluation{
@@ -115,19 +108,33 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		v := validators.New()
 		data.ValidateEvaluation(v, evaluation)
 		if !v.Valid() {
-			log.Error(fmt.Sprintf("%+v", v.Errors))
-			return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "неверные входные данные"}))
+			return app.sendError(c, v.Errors)
 		}
 
 		err = app.Controller.SaveEvaluation(evaluation)
 		if err != nil {
 			log.Error(err.Error())
-
-			return c.Send(app.Templates.Render(templates.Error, &templates.TemplateData{Error: "ошибка при сохранении оценки"}))
+			return app.sendError(c, "ошибка при сохранении оценки")
 		}
 
 		app.Logger.Info("created evaluation")
 
+		session := &data.Session{
+			ChatID: c.Chat().ID,
+			UserID: c.Sender().ID,
+			Form:   data.CommentForm,
+		}
+
+		err = app.Controller.SaveSession(session)
+		if err != nil {
+			log.Error(err.Error())
+			return app.sendError(c, "оценка сохранена, но не создана форма для комментария")
+		}
+
 		return c.Send(app.Templates.Render(templates.EvaluationSecond, nil))
 	}
+}
+
+func (app *Application) submitComment() tele.HandlerFunc {
+	panic("not implemented")
 }
