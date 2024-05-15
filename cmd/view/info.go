@@ -10,6 +10,13 @@ import (
 	"talk_rater_bot/internal/templates"
 )
 
+type infoController interface {
+	GetCurrentConference() *data.Conference
+	CountPageInLectures(pageSize int64) (int64, error)
+	GetLecture(id int64) (*data.Lecture, error)
+	GetSchedule(limit, offset int) ([]*data.Lecture, error)
+}
+
 func (app *Application) viewConference() tele.HandlerFunc {
 	const op = "info.viewConference"
 	log := app.Logger.With(slog.String("op", op))
@@ -19,7 +26,7 @@ func (app *Application) viewConference() tele.HandlerFunc {
 		log.Info("")
 
 		return c.Send(app.Templates.Render(templates.ConferenceTmpl,
-			&templates.TemplateData{Conference: convertConf(app.Controller.GetCurrentConference(), app.TimeParser)}))
+			&templates.TemplateData{Conference: convertConf(app.InfoController.GetCurrentConference(), app.TimeParser)}))
 	}
 }
 
@@ -40,10 +47,10 @@ func (app *Application) viewSchedule() tele.HandlerFunc {
 
 	return func(c tele.Context) error {
 		log := log.With(slog.String("username", c.Sender().Username))
-		maxCountPage, err := app.Controller.CountPageInLectures(limit)
+		maxCountPage, err := app.InfoController.CountPageInLectures(limit)
 		pageNumber := generatePageNumber(c.Callback(), maxCountPage)
 
-		lectures, err := app.Controller.GetSchedule(limit, (pageNumber-1)*limit)
+		lectures, err := app.InfoController.GetSchedule(limit, (pageNumber-1)*limit)
 		if err != nil {
 			log.Warn(err.Error())
 			return app.sendError(c, err)
@@ -164,7 +171,7 @@ func (app *Application) viewLecture() tele.HandlerFunc {
 			return c.Send("номер страницы должен быть числом")
 		}
 
-		lecture, err := app.Controller.GetLecture(lectureID)
+		lecture, err := app.InfoController.GetLecture(lectureID)
 		if err != nil {
 			log.Error(err.Error())
 			return c.Send(app.Templates.Render(templates.Error,

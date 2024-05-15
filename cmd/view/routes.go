@@ -50,7 +50,7 @@ func (app *Application) callbackRouter(c tele.Context) error {
 
 func (app *Application) textRouter(c tele.Context) error {
 	log := app.Logger.With(slog.String("username", c.Sender().Username), slog.String("op", "routes.textRouter"))
-	session, ok, err := app.Controller.RetrieveSession(c.Chat().ID)
+	session, ok, err := app.MiddlewareController.RetrieveSession(c.Chat().ID)
 	if err != nil {
 		log.Error(err.Error())
 		return c.Send("проблема с загрузкой формы")

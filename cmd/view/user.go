@@ -7,6 +7,11 @@ import (
 	"talk_rater_bot/internal/templates"
 )
 
+type userController interface {
+	SaveSession(session *data.Session) error
+	SaveUser(user *data.User) error
+}
+
 func (app *Application) helloUser() tele.HandlerFunc {
 	const op = "user.helloUser"
 	log := app.Logger.With(slog.String("op", op))
@@ -33,7 +38,7 @@ func (app *Application) identicalInfo() tele.HandlerFunc {
 			Form:   data.UserIdenticalInfoForm,
 		}
 
-		err := app.Controller.SaveSession(session)
+		err := app.UserController.SaveSession(session)
 		if err != nil {
 			log.Error(err.Error())
 			return app.sendError(c, "проблема с сохранением формы")
@@ -61,7 +66,7 @@ func (app *Application) identicalInfoForm() tele.HandlerFunc {
 			IdentityInfo: txt,
 		}
 
-		err := app.Controller.SaveUser(user)
+		err := app.UserController.SaveUser(user)
 		if err != nil {
 			log.Error(err.Error())
 			return c.Send("ошибка сохранения данных")

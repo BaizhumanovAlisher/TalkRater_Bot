@@ -7,9 +7,15 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"talk_rater_bot/internal/data"
 	"talk_rater_bot/internal/templates"
 	"time"
 )
+
+type adminController interface {
+	GenerateSchedule(pathFile string) error
+	ExportEvaluations() ([]*data.ExportEvaluation, error)
+}
 
 func (app *Application) helloAdmin() tele.HandlerFunc {
 	const op = "admin.helloAdmin"
@@ -50,7 +56,7 @@ func (app *Application) submitSchedule() tele.HandlerFunc {
 			}
 		}()
 
-		err = app.Controller.GenerateSchedule(filePath)
+		err = app.AdminController.GenerateSchedule(filePath)
 		if err != nil {
 			log.Error(err.Error())
 			return app.sendError(c, err)
@@ -67,7 +73,7 @@ func (app *Application) exportEvaluations() tele.HandlerFunc {
 
 	return func(c tele.Context) error {
 		log := log.With(slog.String("username", c.Sender().Username))
-		evaluations, err := app.Controller.ExportEvaluations()
+		evaluations, err := app.AdminController.ExportEvaluations()
 
 		if err != nil {
 			log.Error(err.Error())

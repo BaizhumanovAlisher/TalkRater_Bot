@@ -16,6 +16,12 @@ const (
 	evaluationSecondPrefix = "evaluation_2"
 )
 
+type evaluationController interface {
+	SaveEvaluation(eval *data.Evaluation) error
+	SaveSession(session *data.Session) error
+	SaveComment(id int64, comment string) error
+}
+
 func (app *Application) evaluationZero() tele.HandlerFunc {
 	const op = "evaluation.evaluationZero"
 	log := app.Logger.With(slog.String("op", op))
@@ -37,7 +43,6 @@ func (app *Application) evaluationZero() tele.HandlerFunc {
 
 		return c.Send(app.Templates.Render(templates.EvaluationZero, nil), selector)
 	}
-
 }
 
 func (app *Application) evaluationFirst() tele.HandlerFunc {
@@ -80,9 +85,7 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		lectureID, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
 			log.Error(err.Error())
-
-			return c.Send(app.Templates.Render(templates.Error,
-				&templates.TemplateData{Error: "проблемы с id доклада"}))
+			return app.sendError(c, "проблемы с id доклада")
 		}
 
 		content, err := strconv.Atoi(args[1])
@@ -111,7 +114,7 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 			return app.sendError(c, v.Errors)
 		}
 
-		err = app.Controller.SaveEvaluation(evaluation)
+		err = app.EvaluationController.SaveEvaluation(evaluation)
 		if err != nil {
 			log.Error(err.Error())
 			return app.sendError(c, "ошибка при сохранении оценки")
@@ -126,7 +129,7 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 			EvaluationID: evaluation.ID,
 		}
 
-		err = app.Controller.SaveSession(session)
+		err = app.EvaluationController.SaveSession(session)
 		if err != nil {
 			log.Error(err.Error())
 			return app.sendError(c, "оценка сохранена, но не создана форма для комментария")
@@ -156,7 +159,7 @@ func (app *Application) submitComment() tele.HandlerFunc {
 			return app.sendError(c, "проблема с сессиями")
 		}
 
-		err := app.Controller.SaveComment(session.EvaluationID, txt)
+		err := app.EvaluationController.SaveComment(session.EvaluationID, txt)
 		if err != nil {
 			log.Error(err.Error())
 			return app.sendError(c, "ошибка при сохранении комментария")

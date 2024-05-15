@@ -4,9 +4,15 @@ import (
 	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
+	"talk_rater_bot/internal/data"
 	"talk_rater_bot/internal/templates"
 	"time"
 )
+
+type middlewareController interface {
+	UserExists(id int64) (bool, error)
+	RetrieveSession(chatID int64) (*data.Session, bool, error)
+}
 
 func (app *Application) recoverPanic(next tele.HandlerFunc) tele.HandlerFunc {
 	const op = "middleware.recoverPanic"
@@ -64,7 +70,7 @@ func (app *Application) checkUser(next tele.HandlerFunc) tele.HandlerFunc {
 
 	return func(c tele.Context) error {
 		log := log.With(slog.String("username", c.Sender().Username))
-		exists, err := app.Controller.UserExists(c.Sender().ID)
+		exists, err := app.MiddlewareController.UserExists(c.Sender().ID)
 
 		if err != nil {
 			log.Error(err.Error())

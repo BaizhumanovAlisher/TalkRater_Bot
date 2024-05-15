@@ -4,21 +4,24 @@ import (
 	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
-	"talk_rater_bot/cmd/controllers"
 	"talk_rater_bot/internal/databases"
 	"talk_rater_bot/internal/helpers"
 	"talk_rater_bot/internal/templates"
 )
 
 type Application struct {
-	Logger     *slog.Logger
-	UserBot    *tele.Bot
-	AdminBot   *tele.Bot
-	AdminDB    *databases.AdminDB
-	Templates  *templates.Templates
-	TimeParser helpers.TimeParser
-	PathTmp    string
-	Controller *controllers.Controller
+	Logger               *slog.Logger
+	UserBot              *tele.Bot
+	AdminBot             *tele.Bot
+	AdminDB              *databases.AdminDB
+	Templates            *templates.Templates
+	TimeParser           helpers.TimeParser
+	PathTmp              string
+	AdminController      adminController
+	UserController       userController
+	InfoController       infoController
+	MiddlewareController middlewareController
+	EvaluationController evaluationController
 }
 
 func (app *Application) Run() {
