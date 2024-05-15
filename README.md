@@ -26,16 +26,13 @@ export TEMPLATE_PATH="$(pwd)/templates"
 
 It is preferred to run in linux environment because it was not tested in windows.
 
-## Env variable for logger
-It is in `config/local.yaml`, var is `env`.
-It can be `local` or `prod`
-
-Settings of logger are in `internal/helpers/logger.go`.
-
 ## Run project
 ```shell
 docker compose up
 ```
+
+## Docker image in Hub
+[docker hub link](https://hub.docker.com/repository/docker/baizhumanov0alisher/talk_rater_bot)
 
 ## Test coverage
 ```shell
@@ -70,6 +67,11 @@ Simple loading config file
 1) MIT licensed
 2) https://github.com/ilyakaznacheev/cleanenv
 
+## Env variable for logger
+It is in `config/local.yaml`, var is `env`.
+It can be `local` or `prod`
+
+Settings of logger are in `internal/helpers/logger.go`.
 
 ## Default time pattern from csv schedule
 `21/07/2024 10:00:00` - MSK time Zone
