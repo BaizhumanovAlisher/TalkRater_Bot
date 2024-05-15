@@ -10,11 +10,11 @@ import (
 
 type Controller struct {
 	db         *gorm.DB
-	timeParser *helpers.TimeParser
+	timeParser helpers.TimeParser
 	conference *data.Conference
 }
 
-func NewController(DB *gorm.DB, timeParser *helpers.TimeParser, conference *data.Conference) *Controller {
+func NewController(DB *gorm.DB, timeParser helpers.TimeParser, conference *data.Conference) *Controller {
 	return &Controller{db: DB, timeParser: timeParser, conference: conference}
 }
 
@@ -36,7 +36,7 @@ func (c *Controller) GenerateSchedule(pathFile string) error {
 	return c.save(mergedLectures)
 }
 
-func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, ac *Controller) (oldLectures []*data.Lecture, err error) {
+func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, c *Controller) (oldLectures []*data.Lecture, err error) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -49,7 +49,7 @@ func sortAndReadFromDBConcurrently(newLectures []*data.Lecture, ac *Controller) 
 
 	go func() {
 		defer wg.Done()
-		oldLectures, err = ac.extractSortedLectures()
+		oldLectures, err = c.extractSortedLectures()
 	}()
 	wg.Wait()
 

@@ -21,7 +21,7 @@ type Config struct {
 
 	TgBotSettings TgBotSettings    `yaml:"tg_bot_settings"`
 	Conference    *data.Conference `yaml:"-"`
-	TimeParser    *TimeParser      `yaml:"-"`
+	TimeParser    TimeParser       `yaml:"-"`
 }
 
 func MustLoadConfig() *Config {

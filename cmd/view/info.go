@@ -23,7 +23,7 @@ func (app *Application) viewConference() tele.HandlerFunc {
 	}
 }
 
-func convertConf(conf *data.Conference, parser *helpers.TimeParser) *templates.Conference {
+func convertConf(conf *data.Conference, parser helpers.TimeParser) *templates.Conference {
 	return &templates.Conference{
 		Name:      conf.Name,
 		URL:       conf.URL,
@@ -90,7 +90,7 @@ func (app *Application) generateResponse(lectures []*data.Lecture, pageNumber in
 	return app.Templates.Render(templates.Schedule, &templates.TemplateData{Schedule: schedule}), selector
 }
 
-func convertShortLecture(lecture *data.Lecture, number int, parser *helpers.TimeParser) *templates.Lecture {
+func convertShortLecture(lecture *data.Lecture, number int, parser helpers.TimeParser) *templates.Lecture {
 	return &templates.Lecture{
 		Number:    strconv.Itoa(number),
 		Name:      lecture.Title,
@@ -183,7 +183,7 @@ func (app *Application) viewLecture() tele.HandlerFunc {
 	}
 }
 
-func convertFullLecture(lecture *data.Lecture, timeParser *helpers.TimeParser) *templates.Lecture {
+func convertFullLecture(lecture *data.Lecture, timeParser helpers.TimeParser) *templates.Lecture {
 	return &templates.Lecture{
 		Name:      lecture.Title,
 		Speaker:   lecture.Speaker,

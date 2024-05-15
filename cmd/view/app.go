@@ -16,7 +16,7 @@ type Application struct {
 	AdminBot   *tele.Bot
 	AdminDB    *databases.AdminDB
 	Templates  *templates.Templates
-	TimeParser *helpers.TimeParser
+	TimeParser helpers.TimeParser
 	PathTmp    string
 	Controller *controllers.Controller
 }
