@@ -78,7 +78,7 @@ func (s *SlogLoggerDB) Trace(ctx context.Context, begin time.Time, fc func() (sq
 			slog.Duration("duration", duration),
 		)
 	} else {
-		s.logger.InfoContext(ctx, "no error",
+		s.logger.InfoContext(ctx, "",
 			slog.String("op", op),
 			slog.String("sql", sql),
 			slog.Int64("rows", rows),

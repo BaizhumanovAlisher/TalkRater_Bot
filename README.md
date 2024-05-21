@@ -14,7 +14,6 @@ mkdir -p secrets tmp_files
 echo -n "<YOUR_API_TOKEN_FOR_USER>" | cat > ./secrets/tg_api_token_user.txt
 echo -n "<YOUR_API_TOKEN_FOR_ADMIN>" | cat > ./secrets/tg_api_token_admin.txt
 echo -n "<YOUR_DB_PASSWORD>" | cat > ./secrets/db_password.txt
-echo -n "<YOUR_REDIS_PASSWORD>" | cat > ./secrets/kv_db_password.txt
 
 export DB_PASSWORD_FILE="$(pwd)/secrets/db_password.txt"
 export TG_API_TOKEN_USER_FILE="$(pwd)/secrets/tg_api_token_user.txt"
@@ -22,6 +21,8 @@ export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
 export PATH_TMP="$(pwd)/tmp_files"
 export TEMPLATE_PATH="$(pwd)/templates"
+
+printenv | grep -E '^(DB_PASSWORD_FILE|TG_API_TOKEN_USER_FILE|TG_API_TOKEN_ADMIN_FILE|CONFIG_PATH_TG_BOT|PATH_TMP|TEMPLATE_PATH)=' > .env
 ```
 
 It is preferred to run in linux environment because it was not tested in windows.

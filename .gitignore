@@ -27,3 +27,4 @@ go.work
 /tmp_files
 coverage.html
 coverage.out
+.env
