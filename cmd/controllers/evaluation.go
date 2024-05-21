@@ -11,10 +11,12 @@ func (c *Controller) SaveEvaluation(eval *data.Evaluation) error {
 	result := c.db.Select("id").Where("user_id = ? AND lecture_id = ?", eval.UserID, eval.LectureID).First(&evaluation)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return c.db.Create(eval).Error
-	}
+		newUser := &data.User{ID: eval.UserID}
 
-	if result.Error != nil {
+		if err := c.db.Create(newUser).Error; err != nil {
+			return err
+		}
+	} else if result.Error != nil {
 		return result.Error
 	}
 

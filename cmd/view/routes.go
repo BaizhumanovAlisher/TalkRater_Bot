@@ -11,11 +11,11 @@ func (app *Application) Routes() {
 	app.UserBot.Use(app.recoverPanic, app.measureTime)
 
 	app.UserBot.Handle("/start", app.helloUser())
-	app.UserBot.Handle("/help", app.helloUser())
-	app.UserBot.Handle("/conference", app.viewConference())
+	app.UserBot.Handle("/help", app.helloUser(), app.checkUser)
+	app.UserBot.Handle("/conference", app.viewConference(), app.checkUser)
 	app.UserBot.Handle("/my_info", app.identicalInfo())
 	app.UserBot.Handle("/schedule", app.viewSchedule(), app.checkUser)
-	app.UserBot.Handle(tele.OnCallback, app.callbackRouter, app.checkUser)
+	app.UserBot.Handle(tele.OnCallback, app.callbackRouter)
 	app.UserBot.Handle(tele.OnText, app.textRouter)
 
 	app.AdminBot.Use(app.recoverPanic, app.measureTime, app.checkAdmin)

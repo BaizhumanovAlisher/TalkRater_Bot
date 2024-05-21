@@ -20,6 +20,7 @@ type evaluationController interface {
 	SaveEvaluation(eval *data.Evaluation) error
 	SaveSession(session *data.Session) error
 	SaveComment(id int64, comment string) error
+	UserExists(id int64) (bool, error)
 }
 
 func (app *Application) evaluationZero() tele.HandlerFunc {
@@ -165,6 +166,20 @@ func (app *Application) submitComment() tele.HandlerFunc {
 			return app.sendError(c, "ошибка при сохранении комментария")
 		}
 
-		return c.Send(app.Templates.Render(templates.CommentSuccess, nil))
+		err = c.Send(app.Templates.Render(templates.CommentSuccess, nil))
+		if err != nil {
+			return err
+		}
+
+		exists, err := app.EvaluationController.UserExists(c.Sender().ID)
+		if err != nil {
+			return err
+		}
+
+		if !exists {
+			return c.Send(app.Templates.Render(templates.UserAuthorization, nil))
+		}
+
+		return nil
 	}
 }

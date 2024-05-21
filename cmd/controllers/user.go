@@ -7,18 +7,17 @@ import (
 )
 
 func (c *Controller) UserExists(id int64) (bool, error) {
-	var count int64
-	result := c.db.Model(&data.User{}).Where("id = ?", id).Count(&count)
+	user := data.User{ID: id}
 
+	result := c.db.First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
-
 		return false, result.Error
 	}
 
-	return count > 0, nil
+	return user.IdentityInfo != "", nil
 }
 
 func (c *Controller) SaveUser(user *data.User) error {
