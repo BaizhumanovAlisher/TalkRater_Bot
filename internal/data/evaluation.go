@@ -6,8 +6,8 @@ import (
 
 type Evaluation struct {
 	ID               int64
-	UserID           int64 `gorm:"uniqueIndex:user_lecture_idx"`
-	LectureID        int64 `gorm:"uniqueIndex:user_lecture_idx"`
+	UserID           int64
+	LectureID        int64
 	User             *User
 	Lecture          *Lecture
 	TypeEvaluation   string
@@ -28,7 +28,6 @@ func ValidateEvaluation(v *validators.Validator, eval *Evaluation) {
 }
 
 const (
-	NotWatched   string = "not watched"
 	NoEvaluation string = "no evaluation"
 	Correct      string = "correct"
 )
