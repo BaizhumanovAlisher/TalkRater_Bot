@@ -3,6 +3,8 @@ The [competitive task](https://www.notion.so/Telegram-835fdb2333be43efae71edd413
 of the [GolangConf 2024](https://cfp.golangconf.ru/) 
 conference is a Telegram bot that simplifies the process of evaluating reports.
 
+My telegram account: [@cs_and_dev](https://t.me/cs_and_dev)
+
 ## Install project
 1) install [docker engine](https://docs.docker.com/engine/install/), [docker compose](https://docs.docker.com/compose/install/), [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2) Run bash script
@@ -21,8 +23,6 @@ export TG_API_TOKEN_ADMIN_FILE="$(pwd)/secrets/tg_api_token_admin.txt"
 export CONFIG_PATH_TG_BOT="$(pwd)/config/local.yaml"
 export PATH_TMP="$(pwd)/tmp_files"
 export TEMPLATE_PATH="$(pwd)/templates"
-
-printenv | grep -E '^(DB_PASSWORD_FILE|TG_API_TOKEN_USER_FILE|TG_API_TOKEN_ADMIN_FILE|CONFIG_PATH_TG_BOT|PATH_TMP|TEMPLATE_PATH)=' > .env
 ```
 
 It is preferred to run in linux environment because it was not tested in windows.
