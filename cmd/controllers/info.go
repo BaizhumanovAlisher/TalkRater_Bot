@@ -3,8 +3,7 @@ package controllers
 import "talk_rater_bot/internal/data"
 
 func (c *Controller) GetCurrentConference() *data.Conference {
-	tmp := *c.conference
-	return &tmp
+	return &(*c.conference)
 }
 
 func (c *Controller) GetSchedule(limit, offset int) ([]*data.Lecture, error) {

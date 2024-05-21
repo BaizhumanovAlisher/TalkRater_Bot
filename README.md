@@ -76,12 +76,3 @@ Settings of logger are in `internal/helpers/logger.go`.
 
 ## Default time pattern from csv schedule
 `21/07/2024 10:00:00` - MSK time Zone
-
-## todo
-```
-Будущая функциональность:
-- проверка времени отправляемой оценки (от начала доклад до конца времени оценивание)
-# добавить кнопку создания нотификации
-/my_notifications - мои напоминания
-/my_evaluations - мои оценки
-```

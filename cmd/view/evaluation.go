@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"log/slog"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 	"talk_rater_bot/internal/data"
 	"talk_rater_bot/internal/templates"
 	"talk_rater_bot/internal/validators"
+	"time"
 )
 
 const (
@@ -21,6 +23,8 @@ type evaluationController interface {
 	SaveSession(session *data.Session) error
 	SaveComment(id int64, comment string) error
 	UserExists(id int64) (bool, error)
+	GetLecture(id int64) (*data.Lecture, error)
+	GetCurrentConference() *data.Conference
 }
 
 func (app *Application) evaluationZero() tele.HandlerFunc {
@@ -113,6 +117,25 @@ func (app *Application) evaluationSecond() tele.HandlerFunc {
 		data.ValidateEvaluation(v, evaluation)
 		if !v.Valid() {
 			return app.sendError(c, v.Errors)
+		}
+
+		now := time.Now()
+		end := app.EvaluationController.GetCurrentConference().EndEvaluationTime
+		if now.After(end) {
+			log.Info("end time evaluation")
+			return c.Send(fmt.Sprintf("время приема оценок закончилось %s назад", now.Sub(end).Abs().String()))
+		}
+
+		lecture, err := app.EvaluationController.GetLecture(lectureID)
+		if err != nil {
+			log.Error(err.Error())
+			return app.sendError(c, err)
+		}
+
+		start := lecture.Start
+		if now.Before(start) {
+			log.Info("user tried evaluate before lecture start")
+			return c.Send(fmt.Sprintf("до начала лекции осталось %s", now.Sub(start).Abs().String()))
 		}
 
 		err = app.EvaluationController.SaveEvaluation(evaluation)
