@@ -77,11 +77,17 @@ func (app *Application) checkUser(next tele.HandlerFunc) tele.HandlerFunc {
 			return c.Send("проблема с авторизацией")
 		}
 
-		if !exists {
-			log.Info("failed authorization")
-			return c.Send(app.Templates.Render(templates.UserAuthorization, nil))
+		err = next(c)
+
+		if exists {
+			return err
 		}
 
-		return next(c)
+		if err != nil {
+			return err
+		}
+
+		log.Info("failed authorization")
+		return c.Send(app.Templates.Render(templates.UserAuthorization, nil))
 	}
 }
