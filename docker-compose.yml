@@ -30,7 +30,7 @@ services:
 
       PATH_TMP: /tmp
       TEMPLATE_PATH: /templates
-    # restart: unless-stopped
+    restart: unless-stopped
     network_mode: host
     volumes:
       - ./tmp_files:/tmp
